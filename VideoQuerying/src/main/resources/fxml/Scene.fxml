@@ -4,33 +4,40 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.media.MediaView?>
 
-<AnchorPane id="AnchorPane" prefHeight="671.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.videoquerying.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="744.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.videoquerying.FXMLController">
     <children>
-      <TextField fx:id="txtVideoDatabase" layoutX="195.0" layoutY="28.0" prefHeight="27.0" prefWidth="239.0" />
-      <TextField fx:id="txtQueryVideo" layoutX="195.0" layoutY="73.0" prefHeight="27.0" prefWidth="239.0" />
-      <Label fx:id="lblSelectVideoDatabase" layoutX="21.0" layoutY="33.0" prefHeight="17.0" prefWidth="157.0" text="Select VIdeo Database:" />
-      <Label fx:id="lblSelectQueryVideo" layoutX="21.0" layoutY="78.0" text="Select Query Video:" />
-      <Label fx:id="lblSelectDescriptors" layoutX="22.0" layoutY="129.0" text="Select Video Descriptors:" />
-      <Button fx:id="btnSearch" layoutX="21.0" layoutY="281.0" mnemonicParsing="false" onAction="#handleSearchAction" text="Search" />
+      <TextField fx:id="txtQueryVideo" layoutX="198.0" layoutY="34.0" prefHeight="27.0" prefWidth="239.0" />
+      <Label fx:id="lblSelectQueryVideo" layoutX="24.0" layoutY="39.0" text="Select Query Video:" />
+      <Label fx:id="lblSelectDescriptors" layoutX="25.0" layoutY="90.0" text="Select Video Descriptors:" />
+      <Button fx:id="btnSearch" layoutX="24.0" layoutY="242.0" mnemonicParsing="false" onAction="#handleSearchAction" text="Search" />
       <Label fx:id="lblResults" layoutX="526.0" layoutY="25.0" text="Results:" />
       <Label fx:id="lblVisualMatch" layoutX="526.0" layoutY="129.0" text="Visual Match" />
-      <Label fx:id="lblResultVideoPreview" layoutX="526.0" layoutY="336.0" text="Video Preview:" />
-      <Label fx:id="lblQueryVideoPreview" layoutX="22.0" layoutY="336.0" text="Query Video Preview" />
-      <MediaView fx:id="mvDatabaseVideo" fitHeight="288.0" fitWidth="352.0" layoutX="526.0" layoutY="365.0" />
-      <MediaView fx:id="mvQueryVideo" fitHeight="288.0" fitWidth="352.0" layoutX="21.0" layoutY="365.0" />
+      <Label fx:id="lblResultVideoPreview" layoutX="529.0" layoutY="297.0" text="Video Preview:" />
+      <Label fx:id="lblQueryVideoPreview" layoutX="25.0" layoutY="297.0" text="Query Video Preview" />
+      <MediaView fx:id="mvDatabaseVideo" fitHeight="288.0" fitWidth="352.0" layoutX="529.0" layoutY="326.0" />
+      <MediaView fx:id="mvQueryVideo" fitHeight="288.0" fitWidth="352.0" layoutX="24.0" layoutY="326.0" />
       <ListView fx:id="lstviewResultsList" layoutX="526.0" layoutY="49.0" prefHeight="75.0" prefWidth="352.0" />
-      <Label fx:id="lblQueryStatus" layoutX="100.0" layoutY="286.0" text="Query Status:" />
-      <RadioButton fx:id="rbtnColor" layoutX="36.0" layoutY="152.0" mnemonicParsing="false" text="Color">
+      <Label fx:id="lblQueryStatus" layoutX="103.0" layoutY="247.0" text="Query Status:" />
+      <RadioButton fx:id="rbtnColor" layoutX="39.0" layoutY="113.0" mnemonicParsing="false" text="Color">
          <toggleGroup>
             <ToggleGroup fx:id="descriptorGroup" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="rbtnMotion" layoutX="36.0" layoutY="177.0" mnemonicParsing="false" text="Motion" toggleGroup="$descriptorGroup" />
-      <RadioButton fx:id="rbtnObjects" layoutX="36.0" layoutY="202.0" mnemonicParsing="false" text="Objects" toggleGroup="$descriptorGroup" />
+      <RadioButton fx:id="rbtnMotion" layoutX="39.0" layoutY="138.0" mnemonicParsing="false" text="Motion" toggleGroup="$descriptorGroup" />
+      <RadioButton fx:id="rbtnObjects" layoutX="39.0" layoutY="163.0" mnemonicParsing="false" text="Objects" toggleGroup="$descriptorGroup" />
+      <Button fx:id="btnVideoPlay" layoutX="573.0" layoutY="655.0" mnemonicParsing="false" onAction="#playDatabaseVideo" prefHeight="27.0" prefWidth="75.0" text="Play" />
+      <Button fx:id="btnVideoPause" layoutX="664.0" layoutY="655.0" mnemonicParsing="false" onAction="#pauseDatabaseVideo" prefWidth="75.0" text="Pause" />
+      <Button fx:id="btnVideoStop" layoutX="757.0" layoutY="655.0" mnemonicParsing="false" onAction="#stopDatabaseVideo" prefWidth="75.0" text="Stop" />
+      <Button fx:id="btnQueryPlay" layoutX="55.0" layoutY="655.0" mnemonicParsing="false" onAction="#playQueryVideo" prefHeight="27.0" prefWidth="75.0" text="Play" />
+      <Button fx:id="btnQueryPause" layoutX="146.0" layoutY="655.0" mnemonicParsing="false" onAction="#pauseQueryVideo" prefWidth="75.0" text="Pause" />
+      <Button fx:id="btnQueryStop" layoutX="239.0" layoutY="655.0" mnemonicParsing="false" onAction="#stopQueryVideo" prefWidth="75.0" text="Stop" />
+      <Slider fx:id="databaseSlider" blockIncrement="1.0" layoutX="529.0" layoutY="621.0" prefHeight="16.0" prefWidth="352.0" />
+      <Slider fx:id="querySlider" blockIncrement="1.0" layoutX="22.0" layoutY="621.0" max="150.0" prefHeight="16.0" prefWidth="352.0" />
     </children>
 </AnchorPane>

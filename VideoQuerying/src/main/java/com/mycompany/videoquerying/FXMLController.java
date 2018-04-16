@@ -4,29 +4,40 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 public class FXMLController implements Initializable {
     
     /* Video Querying Variables */
-    VideoEncoder encoder;
+    private VideoEncoder encoder;
+    
+    private Duration databaseVideoDuration;
+    private Duration queryVideoDuration;
+    
+    private final int FRAME_RATE = 30;
+    
+    private final String DATABASE_DIR = "./database_videos/";
     
     /* FXML Variables */
     @FXML
     private MediaView mvDatabaseVideo;
     @FXML
     private MediaView mvQueryVideo;
-    @FXML
-    private TextField txtVideoDatabase;
     @FXML
     private TextField txtQueryVideo;
     @FXML
@@ -35,6 +46,10 @@ public class FXMLController implements Initializable {
     private Label lblQueryStatus;
     @FXML
     private ToggleGroup descriptorGroup;
+    @FXML
+    private Slider querySlider;
+    @FXML
+    private Slider databaseSlider;
     
     @FXML
     private void handleSearchAction(ActionEvent event) {
@@ -44,30 +59,192 @@ public class FXMLController implements Initializable {
         // Encode an mp4 video at the specified directory
 //        encoder.encodeMp4(txtQueryVideo.getText());
 
-        // Load in the video
-        MediaPlayer player = loadVideo("/Users/stermark/Desktop/sports.mp4", mvDatabaseVideo);
+        // Load database video
+        loadDatabaseVideo("./database_videos/sports/sports.mp4");
         
-        // Play the video
-        player.play();
+        // Load query video
+        loadQueryVideo(txtQueryVideo.getText());
+    }
+    
+    private void loadQueryVideo(String filepath)
+    {
+        loadVideo(filepath, mvQueryVideo);
         
-        // Load in the video
-        MediaPlayer player2 = loadVideo("/Users/stermark/Desktop/sports.mp4", mvQueryVideo);
+        // Dispose of this media player once it is done
+        mvQueryVideo.getMediaPlayer().setOnEndOfMedia(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                mvQueryVideo.getMediaPlayer().dispose();
+            }
+        });
         
-        // Play the video
-        player2.play();
+        // Set up listeners so that the slider bar reflects the current values of the video being displayed
+        mvQueryVideo.getMediaPlayer().currentTimeProperty().addListener(new InvalidationListener()
+        {
+            public void invalidated(javafx.beans.Observable ov)
+            {
+                updateSliderValue(mvQueryVideo.getMediaPlayer(), querySlider, queryVideoDuration);
+            }
+        });
+        
+        mvQueryVideo.getMediaPlayer().setOnReady(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                queryVideoDuration = mvQueryVideo.getMediaPlayer().getMedia().getDuration();
+                querySlider.setMax(100);
+                updateSliderValue(mvQueryVideo.getMediaPlayer(), querySlider, queryVideoDuration);
+            }
+        });
+        
+        querySlider.valueProperty().addListener(new InvalidationListener()
+        {
+            public void invalidated(javafx.beans.Observable ov)
+            {
+                if (querySlider.isValueChanging())
+                {
+                    // multiply duration by percentage calculated by slider position
+                    mvQueryVideo.getMediaPlayer().seek(queryVideoDuration.multiply(querySlider.getValue() / 100.0));
+                }
+            }
+        });
+    }
+    
+    // Loads in the given database video and updates GUI values accordingly
+    private void loadDatabaseVideo(String filepath)
+    {
+        loadVideo(filepath, mvDatabaseVideo);
+
+        // Dispose of this media player once it is done
+        mvDatabaseVideo.getMediaPlayer().setOnEndOfMedia(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                mvDatabaseVideo.getMediaPlayer().dispose();
+            }
+        });
+        
+        // Set up listeners so that the slider bar reflects the current values of the video being displayed
+        mvDatabaseVideo.getMediaPlayer().currentTimeProperty().addListener(new InvalidationListener()
+        {
+            public void invalidated(javafx.beans.Observable ov)
+            {
+                updateSliderValue(mvDatabaseVideo.getMediaPlayer(), databaseSlider, databaseVideoDuration);
+            }
+        });
+        
+        mvDatabaseVideo.getMediaPlayer().setOnReady(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {
+                databaseVideoDuration = mvDatabaseVideo.getMediaPlayer().getMedia().getDuration();
+                databaseSlider.setMax(100);
+                updateSliderValue(mvDatabaseVideo.getMediaPlayer(), databaseSlider, databaseVideoDuration);
+            }
+        });
+        
+        databaseSlider.valueProperty().addListener(new InvalidationListener()
+        {
+            public void invalidated(javafx.beans.Observable ov)
+            {
+                if (databaseSlider.isValueChanging())
+                {
+                    // multiply duration by percentage calculated by slider position
+                    mvDatabaseVideo.getMediaPlayer().seek(databaseVideoDuration.multiply(databaseSlider.getValue() / 100.0));
+                }
+            }
+        });
+    }
+
+    // Updates the slider values so that the current video position is reflected in the slider's current value
+    protected void updateSliderValue(final MediaPlayer player, final Slider slider, final Duration duration) 
+    {
+        if (slider != null) 
+        {
+            Platform.runLater(new Runnable() 
+            {
+                public void run() 
+                {
+                    Duration currentTime = player.getCurrentTime();
+                    slider.setDisable(duration.isUnknown());
+                    if (!slider.isDisabled() && duration.greaterThan(Duration.ZERO) && !slider.isValueChanging()) 
+                    {
+                        slider.setValue(currentTime.divide(duration).toMillis() * 100.0);
+                    }
+                }
+            });
+        }
+    }
+    
+    @FXML
+    private void playDatabaseVideo()
+    {
+        if (mvDatabaseVideo.getMediaPlayer() != null)
+        {
+            mvDatabaseVideo.getMediaPlayer().play();
+        }
+    }
+    
+    @FXML
+    private void pauseDatabaseVideo()
+    {
+        if (mvDatabaseVideo.getMediaPlayer() != null)
+        {
+            mvDatabaseVideo.getMediaPlayer().pause();
+        }
+    }
+    
+    @FXML
+    private void stopDatabaseVideo()
+    {
+        if (mvDatabaseVideo.getMediaPlayer() != null)
+        {
+            mvDatabaseVideo.getMediaPlayer().stop();
+        }
+    }
+    
+    @FXML
+    private void playQueryVideo()
+    {
+        if (mvQueryVideo.getMediaPlayer() != null)
+        {
+            mvQueryVideo.getMediaPlayer().play();
+        }
+    }
+    
+    @FXML
+    private void pauseQueryVideo()
+    {
+        if (mvQueryVideo.getMediaPlayer() != null)
+        {
+            mvQueryVideo.getMediaPlayer().pause();
+        }
+    }
+    
+    @FXML
+    private void stopQueryVideo()
+    {
+        if (mvQueryVideo.getMediaPlayer() != null)
+        {
+            mvQueryVideo.getMediaPlayer().stop();
+        }
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Set up some default form values
-        txtVideoDatabase.setText("/Users/stermark/Desktop/MultimediaFinalProject/databse_videos/");
-        txtQueryVideo.setText("/Users/stermark/Desktop/MultimediaFinalProject/query/second/");
+        txtQueryVideo.setText("./query_videos/first/first.mp4");
         
         // Set default video descriptor toggle button
         descriptorGroup.selectToggle(descriptorGroup.getToggles().get(0));
         
-        // Testing initializing the ListView
-        addItemsToListView();
+        // Add the videos in the database directory to the list view
+        initializeDatabaseListView();
         
         // Initialize other variables
         encoder = new VideoEncoder();
@@ -80,11 +257,11 @@ public class FXMLController implements Initializable {
      * @return 
      */
     private MediaPlayer loadVideo(String filepath, MediaView viewer)
-    {
+    {        
         // Load in an mp4 video file to the MediaPlayer
         File file = new File(filepath);
-        String MEDIA_URL = file.toURI().toString(); 
-        Media media = new Media(MEDIA_URL);
+        Media media = new Media(file.toURI().toString());
+        
         MediaPlayer player = new MediaPlayer(media);
         viewer.setMediaPlayer(player);
 
@@ -94,26 +271,27 @@ public class FXMLController implements Initializable {
         return player;
     }
     
-    /**
-     * Adds a set of items to a ListView GUI item.
-     */
-    private void addItemsToListView()
+    // Adds a set of items to a ListView GUI item.
+    private void initializeDatabaseListView()
     {
-        ArrayList<String> months = new ArrayList<String>();
-
-        months.add("January");
-        months.add("February");
-        months.add("March");
-        months.add("April");
-        months.add("May");
-        months.add("June");
-        months.add("July");
-        months.add("August");
-        months.add("September");
-        months.add("October");
-        months.add("November");
-        months.add("December");
+        // Add a listener to results list view to handle selection changes
+        lstviewResultsList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() 
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) 
+            {
+                loadDatabaseVideo(DATABASE_DIR + newValue + "/" + newValue + ".mp4");
+            }
+        });
         
-        lstviewResultsList.getItems().addAll(months);
+        // Get the names of the videos in the database
+        File[]directories = new File(DATABASE_DIR).listFiles(File::isDirectory);
+        ArrayList<String> directoryNames = new ArrayList<String>();
+        for (int i = 0; i < directories.length; i++)
+        {
+            directoryNames.add(directories[i].getName());
+        }
+        
+        lstviewResultsList.getItems().addAll(directoryNames);
     }
 }

@@ -91,7 +91,7 @@ public class VideoEncoder {
         catch (Exception e)
         {
             System.out.println("Unable to use ffmpeg to process the files.");
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
         return true;
@@ -158,12 +158,12 @@ public class VideoEncoder {
         } 
         catch (FileNotFoundException e) 
         {
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         } 
         catch (IOException e) 
         {
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
         return true;
