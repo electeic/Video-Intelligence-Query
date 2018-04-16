@@ -1,3 +1,4 @@
 *.png
 *.rgb
 *.wav
+.DS_Store
