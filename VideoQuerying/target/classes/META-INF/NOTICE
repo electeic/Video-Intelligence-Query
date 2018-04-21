@@ -1,8 +1,7 @@
+This product currently only contains code developed by authors
+of specific components, as identified by the source code files;
+if such notes are missing files have been created by
+Tatu Saloranta.
 
-HttpCore
-Copyright 2005-2009 Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
-
+For additional credits (generally to people who reported problems)
+see CREDITS file.

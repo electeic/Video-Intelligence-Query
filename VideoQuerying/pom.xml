@@ -25,6 +25,11 @@
             <artifactId>google-cloud-video-intelligence</artifactId>
             <version>0.42.1-beta</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-storage</artifactId>
+            <version>1.27.0</version>
+        </dependency>
     </dependencies>
 
     <build>

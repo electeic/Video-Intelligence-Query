@@ -1,5 +1,8 @@
 package com.mycompany.videoquerying;
 
+import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
+import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabelsFromCloud;
+import static com.mycompany.videoquerying.GcloudVideoIntel.uploadFiles;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
@@ -58,6 +62,21 @@ public class FXMLController implements Initializable {
         
         // Encode an mp4 video at the specified directory
 //        encoder.encodeMp4(txtQueryVideo.getText());
+
+        analyzeLabels("./database_videos/sports/sports.mp4");
+        
+        try
+        {
+            System.out.println("Calling the cloud analysis.");
+            //analyzeLabelsFromCloud();
+//            uploadFiles();
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error when calling analyzeLabelsFromCloud()");
+            e.printStackTrace();
+        }
+        
 
         // Load database video
         loadDatabaseVideo("./database_videos/sports/sports.mp4");
@@ -118,15 +137,15 @@ public class FXMLController implements Initializable {
     {
         loadVideo(filepath, mvDatabaseVideo);
 
-        // Dispose of this media player once it is done
-        mvDatabaseVideo.getMediaPlayer().setOnEndOfMedia(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                mvDatabaseVideo.getMediaPlayer().dispose();
-            }
-        });
+//        // Dispose of this media player once it is done
+//        mvDatabaseVideo.getMediaPlayer().setOnEndOfMedia(new Runnable() 
+//        {
+//            @Override
+//            public void run() 
+//            {
+//                mvDatabaseVideo.getMediaPlayer().dispose();
+//            }
+//        });
         
         // Set up listeners so that the slider bar reflects the current values of the video being displayed
         mvDatabaseVideo.getMediaPlayer().currentTimeProperty().addListener(new InvalidationListener()
@@ -280,6 +299,17 @@ public class FXMLController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) 
             {
+                // Ensure that any previous media player has been disposed of before loading the next one
+                if (mvDatabaseVideo.getMediaPlayer() != null)
+                {
+                    mvDatabaseVideo.getMediaPlayer().stop();
+                    mvDatabaseVideo.getMediaPlayer().dispose();
+                    while (mvDatabaseVideo.getMediaPlayer().getStatus() != Status.DISPOSED)
+                    {
+                        // do nothing while waiting for the current video to be disposed of
+                    }
+                }
+
                 loadDatabaseVideo(DATABASE_DIR + newValue + "/" + newValue + ".mp4");
             }
         });
