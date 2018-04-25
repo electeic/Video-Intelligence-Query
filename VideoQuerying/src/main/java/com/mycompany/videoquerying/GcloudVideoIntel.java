@@ -34,6 +34,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.StorageOptions;
+import java.io.File;
 
 
 /**
@@ -53,8 +54,9 @@ public class GcloudVideoIntel {
 //        FixedCredentialsProvider credentialsProvider = FixedCredentialsProvider.create(credentials);
 //    }
 
-    public static void analyzeLabels(String filePath){
-
+    // Uploads the video at the given file path and returns the 
+    public static GCloudResults analyzeLabels(String filePath){
+        
         // Instantiate a com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient
         try (VideoIntelligenceServiceClient client = VideoIntelligenceServiceClient.create()) {
             // Read file and encode into Base64
@@ -72,17 +74,24 @@ public class GcloudVideoIntel {
                     client.annotateVideoAsync(request);
 
             System.out.println("Waiting for operation to complete...");
-            for (VideoAnnotationResults results : response.get().getAnnotationResultsList()) {
+            int index = 0;
+            for (VideoAnnotationResults results : response.get().getAnnotationResultsList()) 
+            {
+                System.out.println("********************* Results " + index + " *********************");
                 // process video / segment level label annotations
+                System.out.println("********************* Video level label annotations: *********************");
                 System.out.println("Locations: ");
-                for (LabelAnnotation labelAnnotation : results.getSegmentLabelAnnotationsList()) {
+                for (LabelAnnotation labelAnnotation : results.getSegmentLabelAnnotationsList()) 
+                {
                     System.out.println("Video label: " + labelAnnotation.getEntity().getDescription());
                     // categories
-                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) {
+                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) 
+                    {
                         System.out.println("Video label category: " + categoryEntity.getDescription());
                     }
                     // segments
-                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) {
+                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) 
+                    {
                         double startTime = segment.getSegment().getStartTimeOffset().getSeconds()
                                 + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
                         double endTime = segment.getSegment().getEndTimeOffset().getSeconds()
@@ -90,18 +99,22 @@ public class GcloudVideoIntel {
                         System.out.printf("Segment location: %.3f:%.2f\n", startTime, endTime);
                         System.out.println("Confidence: " + segment.getConfidence());
                     }
+                    System.out.println("------------------------");
                 }
 
+                System.out.println("********************* Shot level label annotations: *********************");
                 // process shot label annotations
-                for (LabelAnnotation labelAnnotation : results.getShotLabelAnnotationsList()) {
-                    System.out
-                            .println("Shot label: " + labelAnnotation.getEntity().getDescription());
+                for (LabelAnnotation labelAnnotation : results.getShotLabelAnnotationsList()) 
+                {
+                    System.out.println("Shot label: " + labelAnnotation.getEntity().getDescription());
                     // categories
-                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) {
+                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) 
+                    {
                         System.out.println("Shot label category: " + categoryEntity.getDescription());
                     }
                     // segments
-                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) {
+                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) 
+                    {
                         double startTime = segment.getSegment().getStartTimeOffset().getSeconds()
                                 + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
                         double endTime = segment.getSegment().getEndTimeOffset().getSeconds()
@@ -109,34 +122,43 @@ public class GcloudVideoIntel {
                         System.out.printf("Segment location: %.3f:%.2f\n", startTime, endTime);
                         System.out.println("Confidence: " + segment.getConfidence());
                     }
+                    System.out.println("------------------------");
                 }
 
-                // process frame label annotations
-                for (LabelAnnotation labelAnnotation : results.getFrameLabelAnnotationsList()) {
-                    System.out
-                            .println("Frame label: " + labelAnnotation.getEntity().getDescription());
-                    // categories
-                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) {
-                        System.out.println("Frame label category: " + categoryEntity.getDescription());
-                    }
-                    // segments
-                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) {
-                        double startTime = segment.getSegment().getStartTimeOffset().getSeconds()
-                                + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
-                        double endTime = segment.getSegment().getEndTimeOffset().getSeconds()
-                                + segment.getSegment().getEndTimeOffset().getNanos() / 1e9;
-                        System.out.printf("Segment location: %.3f:%.2f\n", startTime, endTime);
-                        System.out.println("Confidence: " + segment.getConfidence());
-                    }
-                }
+//                System.out.println("********************* Frame label annotations: *********************");
+//                // process frame label annotations
+//                for (LabelAnnotation labelAnnotation : results.getFrameLabelAnnotationsList()) 
+//                {
+//                    System.out
+//                            .println("Frame label: " + labelAnnotation.getEntity().getDescription());
+//                    // categories
+//                    for (Entity categoryEntity : labelAnnotation.getCategoryEntitiesList()) 
+//                    {
+//                        System.out.println("Frame label category: " + categoryEntity.getDescription());
+//                    }
+//                    // segments
+//                    for (LabelSegment segment : labelAnnotation.getSegmentsList()) 
+//                    {
+//                        double startTime = segment.getSegment().getStartTimeOffset().getSeconds()
+//                                + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
+//                        double endTime = segment.getSegment().getEndTimeOffset().getSeconds()
+//                                + segment.getSegment().getEndTimeOffset().getNanos() / 1e9;
+//                        System.out.printf("Segment location: %.3f:%.2f\n", startTime, endTime);
+//                        System.out.println("Confidence: " + segment.getConfidence());
+//                    }
+//                }
+                index++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
+    // Analyzes a file that has already been uploaded to Google Cloud Storage
+    // DO NOT USE
     public static void analyzeLabelsFromCloud() throws IOException, Exception
     {
         // Instantiate a com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient
@@ -216,6 +238,8 @@ public class GcloudVideoIntel {
         }
     }
     
+    // Uploads a file to Google Cloud Storage
+    // DO NOT USE
     public static void uploadFiles() throws IOException
     {
         // Create a service object

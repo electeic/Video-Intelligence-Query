@@ -30,6 +30,12 @@
             <artifactId>google-cloud-storage</artifactId>
             <version>1.27.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.2.0-0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
