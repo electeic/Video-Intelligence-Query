@@ -80,11 +80,16 @@ public class VideoEncoder {
         }
         
         // Run ffmpeg with a new process to convert the .png's and .wav file to an .mp4 video
-        //ffmpeg -framerate 30 -start_number 1 -i sports%03d.png -i sports.wav -pix_fmt yuv420p -c:v libx264 -qp 1 -acodec aac NEWTEST2.mp4
+        // ffmpeg -framerate 30 -start_number 1 -i sports%03d.png -i sports.wav -pix_fmt yuv420p -c:v libx264 -vf scale=1056x864 -acodec aac sportsTest.mp4
+        // ffmpeg -framerate 30 -start_number 1 -i sports%03d.png -i sports.wav -pix_fmt yuv420p -c:v libx264 -qp 1 -acodec aac NEWTEST2.mp4
         try
         {
-            String ffmpegCommand = "/usr/local/bin/ffmpeg -framerate 30 -start_number 1 -i " + videosDir+"/"+videoName+"/"+videoName + "%03d.png -i "
-                                    + videosDir+"/"+videoName+"/"+videoName + ".wav -pix_fmt yuv420p -c:v libx264 -qp 1 -acodec aac " + videosDir+"/"+videoName+"/"+videoName + ".mp4";
+//            String ffmpegCommand = "/usr/local/bin/ffmpeg -framerate 30 -start_number 1 -i " + videosDir+"/"+videoName+"/"+videoName + "%03d.png -i "
+//                                    + videosDir+"/"+videoName+"/"+videoName + ".wav -pix_fmt yuv420p -c:v libx264 -qp 1 -acodec aac " + videosDir+"/"+videoName+"/"+videoName + ".mp4";
+            
+            //
+             String ffmpegCommand = "/usr/local/bin/ffmpeg -framerate 30 -start_number 1 -i " + videosDir+"/"+videoName+"/"+videoName + "%03d.png -i "
+                                    + videosDir+"/"+videoName+"/"+videoName + ".wav -pix_fmt yuv420p -c:v libx264 -vf scale=1056x864 -acodec aac " + videosDir+"/"+videoName+"/"+videoName + ".mp4";
             
             Runtime.getRuntime().exec(ffmpegCommand);
         }

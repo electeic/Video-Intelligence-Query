@@ -126,6 +126,7 @@ public class FXMLController implements Initializable {
         /*                  Load the query video into the GUI
         /**********************************************************************/
         String queryVideoFilepath = queryFileDirectory.getAbsolutePath() + "/" + queryFileDirectory.getName() + ".mp4";
+        System.out.println(queryVideoFilepath);
         loadQueryVideo(queryVideoFilepath);
 
         /**********************************************************************/
@@ -138,7 +139,7 @@ public class FXMLController implements Initializable {
         queryResults.filename = queryFileDirectory.getName();
         
         // Google Cloud object detection
-        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
+//        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
         // Opencv color
         queryResults.colorResults = processOpenCVColor(queryDirectory);
         // Opencv motion
