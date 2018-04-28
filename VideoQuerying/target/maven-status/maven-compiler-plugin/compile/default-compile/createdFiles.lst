@@ -5,6 +5,7 @@ com/mycompany/videoquerying/FXMLController$8.class
 com/mycompany/videoquerying/VideoEncoder.class
 com/mycompany/videoquerying/VideoAnalysisResults.class
 com/mycompany/videoquerying/FXMLController$4.class
+com/mycompany/videoquerying/SegmentData.class
 com/mycompany/videoquerying/FXMLController$2$1.class
 com/mycompany/videoquerying/GcloudVideoIntel.class
 com/mycompany/videoquerying/FXMLController$3.class
@@ -12,7 +13,9 @@ com/mycompany/videoquerying/FXMLController$3$1.class
 com/mycompany/videoquerying/OpenCVColorResults.class
 com/mycompany/videoquerying/MatchResult.class
 com/mycompany/videoquerying/FXMLController$7.class
+com/mycompany/videoquerying/ShotLabelData.class
 com/mycompany/videoquerying/FXMLController$12.class
+com/mycompany/videoquerying/VideoLabelData.class
 com/mycompany/videoquerying/FXMLController$5.class
 com/mycompany/videoquerying/FXMLController.class
 com/mycompany/videoquerying/FXMLController$9.class

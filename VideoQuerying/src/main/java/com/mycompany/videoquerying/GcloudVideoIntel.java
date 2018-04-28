@@ -35,6 +35,7 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.StorageOptions;
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -59,10 +60,9 @@ public class GcloudVideoIntel {
         
         // Instantiate a com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient
         try (VideoIntelligenceServiceClient client = VideoIntelligenceServiceClient.create()) {
-            // Read file and encode into Base64
+            // Read file and encode into bytes
             Path path = Paths.get(filePath);
             byte[] data = Files.readAllBytes(path);
-//            byte[] encodedBytes = Base64.encodeBase64(data);
 
             AnnotateVideoRequest request = AnnotateVideoRequest.newBuilder()
                     .setInputContent(ByteString.copyFrom(data))
@@ -73,9 +73,93 @@ public class GcloudVideoIntel {
             OperationFuture<AnnotateVideoResponse, AnnotateVideoProgress> response =
                     client.annotateVideoAsync(request);
 
+            // Read the results of the request in a GCloudResults struct
+            GCloudResults finalResults = new GCloudResults();
+            
+            
             System.out.println("Waiting for operation to complete...");
+            List<VideoAnnotationResults> responseResults = response.get().getAnnotationResultsList();
+            
+            // For each video response
+            for (int i = 0; i < responseResults.size(); i++)
+            {
+                // For each video label
+                for (int videoLabelIndex = 0; videoLabelIndex < responseResults.get(i).getSegmentLabelAnnotationsList().size(); videoLabelIndex++)
+                {
+                    // Get the raw video label data
+                    LabelAnnotation videoLabelAnnotation = responseResults.get(i).getSegmentLabelAnnotations(videoLabelIndex);
+                    
+                    // Set up the new video label data structure
+                    VideoLabelData videoLabel = new VideoLabelData();
+                    
+                    // Extract video label information
+                    videoLabel.videoLabel = videoLabelAnnotation.getEntity().getDescription();
+                    
+                    // For each video label category
+                    for (Entity categoryEntity : videoLabelAnnotation.getCategoryEntitiesList())
+                    {
+                        videoLabel.videoLabelCategories.add(categoryEntity.getDescription());
+                    }
+                    
+                    // For each video label segment (includes start time, end time, and confidence)
+                    for (LabelSegment segment : videoLabelAnnotation.getSegmentsList())
+                    {
+                        videoLabel.segmentData.startTime = segment.getSegment().getStartTimeOffset().getSeconds()
+                                + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
+                        
+                        videoLabel.segmentData.endTime = segment.getSegment().getEndTimeOffset().getSeconds()
+                                + segment.getSegment().getEndTimeOffset().getNanos() / 1e9;
+                        
+                        videoLabel.segmentData.confidence = segment.getConfidence();   
+                    }
+                    
+                    // Add the final video label into the list of videoLabels to be returned
+                    finalResults.videoLabels.put(videoLabel.videoLabel, videoLabel); // Note: Duplicate videoLabel key values are possible
+                }
+                
+                // For each shot label
+                for (int shotLabelIndex = 0; shotLabelIndex < responseResults.get(i).getShotLabelAnnotationsList().size(); shotLabelIndex++)
+                {
+                    // Get the raw shot label data
+                    LabelAnnotation shotLabelAnnotation = responseResults.get(i).getShotLabelAnnotationsList().get(shotLabelIndex);
+                    
+                    // Set up the new shot label data structure
+                    ShotLabelData shotLabel = new ShotLabelData();
+                    
+                    // Extract shot label information
+                    shotLabel.shotLabel = shotLabelAnnotation.getEntity().getDescription();
+                    
+                    // For each shot label category
+                    for (Entity categoryEntity : shotLabelAnnotation.getCategoryEntitiesList()) 
+                    {
+                        shotLabel.shotLabelCategories.add(categoryEntity.getDescription());
+                    }
+                                        
+                    // For each shot label segment (includes start time, end time, and confidence)
+                    for (LabelSegment segment : shotLabelAnnotation.getSegmentsList()) 
+                    {
+                        SegmentData newSegmentData = new SegmentData();
+                        
+                        newSegmentData.startTime = segment.getSegment().getStartTimeOffset().getSeconds()
+                                + segment.getSegment().getStartTimeOffset().getNanos() / 1e9;
+                        
+                        newSegmentData.endTime = segment.getSegment().getEndTimeOffset().getSeconds()
+                                + segment.getSegment().getEndTimeOffset().getNanos() / 1e9;
+                        
+                        newSegmentData.confidence = segment.getConfidence();
+                        
+                        shotLabel.segments.add(newSegmentData);
+                    }
+                    
+                    // Add the final shot label into the list of shot labels to be returned
+                    finalResults.shotLabels.put(shotLabel.shotLabel, shotLabel);
+                }
+                
+            }
+            
             int index = 0;
-            for (VideoAnnotationResults results : response.get().getAnnotationResultsList()) 
+//            for (VideoAnnotationResults results : response.get().getAnnotationResultsList()) 
+            for (VideoAnnotationResults results : responseResults)
             {
                 System.out.println("********************* Results " + index + " *********************");
                 // process video / segment level label annotations
@@ -149,9 +233,16 @@ public class GcloudVideoIntel {
 //                }
                 index++;
             }
-        } catch (IOException e) {
+            
+            // Return the results of the request to Google Cloud
+            return finalResults; 
+        } 
+        catch (IOException e) 
+        {
             e.printStackTrace();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
         }
         return null;

@@ -5,6 +5,11 @@ import static com.mycompany.videoquerying.QueryProcessor.processGoogleCloudObjec
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVColor;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVMotion;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,7 +124,7 @@ public class FXMLController implements Initializable {
         /**********************************************************************/
         /*       Write query video frames to pngs and then encode to mp4
         /**********************************************************************/
-        lblQueryStatus.setText("Query Status: Processing query video...");
+        System.out.println("Query Status: Processing query video...");
 //        encoder.encodeMp4(queryDirectory);
         
         /**********************************************************************/        
@@ -132,7 +137,7 @@ public class FXMLController implements Initializable {
         /**********************************************************************/
         /*                   Perform descriptor analysis
         /**********************************************************************/
-        lblQueryStatus.setText("Query Status: Processing video descriptors...");
+        System.out.println("Query Status: Processing video descriptors...");
         
         // Create the container for the query results
         VideoAnalysisResults queryResults = new VideoAnalysisResults();
@@ -148,13 +153,28 @@ public class FXMLController implements Initializable {
         /**********************************************************************/
         /* Calculate scores and rank the videos based on descriptor selection
         /**********************************************************************/
-        lblQueryStatus.setText("Query Status: Finding closest matches among database videos...");
-        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
+        System.out.println("Query Status: Finding closest matches among database videos...");
+        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, DATABASE_DIR, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
         
         /**********************************************************************/
         /* TODO: Display the results in the list view and the histogram
         /**********************************************************************/
         
+//        // TESTING: Serialization and Deserialization of VideoAnalysisResults object
+//        writeDatabaseMetadataFile(queryResults, queryDirectory);
+//        
+//        VideoAnalysisResults newResults = readDatabaseMetadataFile(queryDirectory);
+//        if (newResults != null)
+//        {
+//            System.out.println("Successfully read the metadata. " + newResults.filename);
+//        }
+//        else
+//        {
+//            System.out.println("The metadata file had null information.");
+//        }
+//        // END TESTING
+        
+        System.out.println("Finished processing query.");
     }
     
     /**
@@ -464,4 +484,84 @@ public class FXMLController implements Initializable {
         
         lstviewResultsList.getItems().addAll(directoryNames);
     }
+    
+    // Used to initialize metadata file for a video in the database.
+    private void writeDatabaseMetadataFile(VideoAnalysisResults results, String videoDirectory)
+    {
+        // Ensure that the directory to write to exists
+        File videoFileDirectory = new File (videoDirectory);
+        if (!videoFileDirectory.exists())
+        {
+            System.out.println("Video directory not found. Please enter a valid video location.");
+            return;
+        }
+        
+        String videoFilepath = videoFileDirectory.getAbsolutePath() + "/" + results.filename + ".meta";
+        System.out.println(videoFilepath);
+        
+        // Serialize and write out the object
+        try
+        {   
+            //Saving of object in a file
+            FileOutputStream file = new FileOutputStream(videoFilepath);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+             
+            // Method for serialization of object
+            out.writeObject(results);
+             
+            out.close();
+            file.close();
+             
+            System.out.println("Object has been serialized.");
+ 
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+            System.out.println("IOException is caught. Unable to write out results object.");
+        }
+    }
+    
+//    // Reads in the metadata in the provided file directory.
+//    private VideoAnalysisResults readDatabaseMetadataFile(String videoDirectory)
+//    {
+//        // Ensure that the directory to read from exists
+//        File videoFileDirectory = new File (videoDirectory);
+//        if (!videoFileDirectory.exists())
+//        {
+//            System.out.println("Video directory not found. Please enter a valid video location.");
+//            return null;
+//        }
+//        
+//        String metadataFilepath = videoFileDirectory.getAbsolutePath() + "/" + videoFileDirectory.getName() + ".meta";
+//        System.out.println(metadataFilepath);
+//        
+//        VideoAnalysisResults metadata = null;
+//        
+//        // Deserialization
+//        try
+//        {   
+//            // Reading the object from a file
+//            FileInputStream file = new FileInputStream(metadataFilepath);
+//            ObjectInputStream in = new ObjectInputStream(file);
+//             
+//            // Method for deserialization of object
+//            metadata = (VideoAnalysisResults) in.readObject();
+//             
+//            in.close();
+//            file.close();
+//        }
+//         
+//        catch(IOException ex)
+//        {
+//            System.out.println("IOException is caught. Unable to read metadata.");
+//        }
+//         
+//        catch(ClassNotFoundException ex)
+//        {
+//            System.out.println("ClassNotFoundException is caught. Unable to read metadata.");
+//        }
+//        
+//        return metadata;
+//    }
 }
