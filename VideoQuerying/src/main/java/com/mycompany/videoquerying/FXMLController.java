@@ -1,18 +1,17 @@
 package com.mycompany.videoquerying;
 
-<<<<<<< Updated upstream
+import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 import static com.mycompany.videoquerying.QueryProcessor.findDatabaseMatch;
 import static com.mycompany.videoquerying.QueryProcessor.processGoogleCloudObjects;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVColor;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVMotion;
-=======
+
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabelsFromCloud;
 import static com.mycompany.videoquerying.GcloudVideoIntel.uploadFiles;
 import static com.mycompany.videoquerying.OpenCVIntel.CVtest;
 import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 
->>>>>>> Stashed changes
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -103,7 +102,6 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleSearchAction(ActionEvent event) {
 
-<<<<<<< Updated upstream
         /* Old code flow. REMOVE later. */
         // Load database video
 //        loadDatabaseVideo("./database_videos/sports/sports.mp4");
@@ -119,24 +117,12 @@ public class FXMLController implements Initializable {
         String queryDirectory = txtQueryVideo.getText();
         File queryFileDirectory = new File (queryDirectory);
         if (!queryFileDirectory.exists())
-=======
-//        analyzeLabels("./database_videos/sports/sports.mp4");
-//        CVtest();
-        
-        try
-        {
-            System.out.println("Calling the cloud analysis.");
-            //analyzeLabelsFromCloud();
-//            uploadFiles();
-            MotionCV();
-        }
-        catch (Exception e)
->>>>>>> Stashed changes
         {
             lblQueryStatus.setText("Directory not found. Please enter a valid query location.");
             return;
         }
-        
+
+
         /**********************************************************************/
         /* Set the descriptor processing flags based on radio button selection
         /**********************************************************************/

@@ -118,14 +118,8 @@ public class OpenCVIntel {
 //        camera.open(0); //open camera
 
         //set the video size to 512x288
-        camera.set(3, 352);
-        camera.set(4, 288);
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        camera.set(3, 1056);
+        camera.set(4, 864);
 
         camera.read(frame);
         //convert to grayscale and set the first frame
@@ -165,6 +159,7 @@ public class OpenCVIntel {
         for(int i=0; i < cnts.size(); i++) {
             totalscore += Imgproc.contourArea(cnts.get(i));
         }
+
         System.out.println(totalscore);
     }
 }
