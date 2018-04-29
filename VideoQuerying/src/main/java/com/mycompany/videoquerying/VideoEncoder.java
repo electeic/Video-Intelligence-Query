@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
  */
 public class VideoEncoder {
     
-    int IMAGE_WIDTH = 352;
-    int IMAGE_HEIGHT = 288;
+    private static int IMAGE_WIDTH = 352;
+    private static int IMAGE_HEIGHT = 288;
 
     public VideoEncoder()
     {
@@ -27,7 +27,7 @@ public class VideoEncoder {
      * @param frameNum
      * @return 
      */
-    private String getFrameNumString(int frameNum)
+    private static String getFrameNumString(int frameNum)
     {
         if (frameNum < 10)
             return "00" + Integer.toString(frameNum);
@@ -42,7 +42,7 @@ public class VideoEncoder {
      * @param queryVideoDir
      * @return - Whether the encoding was successful or not.
      */
-    public boolean encodeMp4(String queryVideoDir)
+    public static boolean encodeMp4(String queryVideoDir)
     {
         File file = new File(queryVideoDir);
         String videoName = file.getName();
@@ -107,7 +107,7 @@ public class VideoEncoder {
      * @param img
      * @param fileName 
      */
-    private void writeImageToPng(BufferedImage img, String fileName)
+    private static void writeImageToPng(BufferedImage img, String fileName)
     {
         try
         {
@@ -127,7 +127,7 @@ public class VideoEncoder {
      * @param imgPath
      * @param img 
      */
-    private boolean readImageRGB(int width, int height, String imgPath, BufferedImage img)
+    private static boolean readImageRGB(int width, int height, String imgPath, BufferedImage img)
     {
         try 
         {

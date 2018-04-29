@@ -2,11 +2,14 @@ package com.mycompany.videoquerying;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
 import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
+import static com.mycompany.videoquerying.VideoEncoder.encodeMp4;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
@@ -142,7 +145,7 @@ public class QueryProcessor {
     }
     
     // Reads in the metadata in the provided file directory.
-    private static VideoAnalysisResults readDatabaseMetadataFile(String videoDirectory)
+    public static VideoAnalysisResults readDatabaseMetadataFile(String videoDirectory)
     {
         // Ensure that the directory to read from exists
         File videoFileDirectory = new File (videoDirectory);
@@ -182,5 +185,79 @@ public class QueryProcessor {
         }
         
         return metadata;
+    }
+    
+    // Used to initialize metadata file for a video in the database.
+    public static void writeDatabaseMetadataFile(VideoAnalysisResults results, String videoDirectory)
+    {
+        // Ensure that the directory to write to exists
+        File videoFileDirectory = new File (videoDirectory);
+        if (!videoFileDirectory.exists())
+        {
+            System.out.println("Video directory not found. Please enter a valid video location.");
+            return;
+        }
+        
+        String videoFilepath = videoFileDirectory.getAbsolutePath() + "/" + results.filename + ".meta";
+        System.out.println(videoFilepath);
+        
+        // Serialize and write out the object
+        try
+        {   
+            //Saving of object in a file
+            FileOutputStream file = new FileOutputStream(videoFilepath);
+            ObjectOutputStream out = new ObjectOutputStream(file);
+             
+            // Method for serialization of object
+            out.writeObject(results);
+             
+            out.close();
+            file.close();
+             
+            System.out.println("Object has been serialized.");
+ 
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+            System.out.println("IOException is caught. Unable to write out results object.");
+        }
+    }
+    
+    // Creates a full metadata file for each of the videos in the database.
+    // NOTE: Should not be used in production code as all videos should be pre-processed offline.
+    public static void processAllDatabaseVideos(String databaseDirectory)
+    {
+        // for each video in the database
+        File[] directories = new File(databaseDirectory).listFiles(File::isDirectory);
+        
+        for (int i = 0; i < directories.length; i++)
+        {
+            // Get video filepath
+            String videoDirectory = directories[i].getAbsolutePath();
+            
+            // Encode the video (to get .png's and .mp4)
+            encodeMp4(videoDirectory);
+            
+            // Setup VideoAnalysisResults for the current video
+            VideoAnalysisResults dbVideoResults = new VideoAnalysisResults();
+            
+            // Get video name
+            dbVideoResults.filename = directories[i].getName();
+            
+            // Process objects
+            dbVideoResults.objectResults = processGoogleCloudObjects(videoDirectory);
+            // Process color
+            dbVideoResults.colorResults = processOpenCVColor(videoDirectory);
+            // Process motion
+            dbVideoResults.motionResults = processOpenCVMotion(videoDirectory);
+            
+            // Write out VideoAnalysisResults
+            writeDatabaseMetadataFile(dbVideoResults, directories[i].getAbsolutePath());
+            
+            // Report success or failure
+            System.out.println("Finished writing " + dbVideoResults.filename + ".meta");
+        }
+        System.out.println("Finished processing all videos in the database.");
     }
 }

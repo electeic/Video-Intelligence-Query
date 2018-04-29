@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -29,6 +30,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
@@ -81,6 +85,8 @@ public class FXMLController implements Initializable {
     private RadioButton rbtnMotion;
     @FXML
     private RadioButton rbtnObjects;
+    @FXML
+    private AreaChart chtVisualMatch;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -101,16 +107,6 @@ public class FXMLController implements Initializable {
     
     @FXML
     private void handleSearchAction(ActionEvent event) {
-
-        /* Old code flow. REMOVE later. */
-        // Load database video
-//        loadDatabaseVideo("./database_videos/sports/sports.mp4");
-        
-        // Load query video
-//        loadQueryVideo(txtQueryVideo.getText());
-        
-        /*********************** New code flow***********************/
-        
         /**********************************************************************/        
         /*   Get the query video input and ensure that the files exist
         /**********************************************************************/
@@ -162,25 +158,13 @@ public class FXMLController implements Initializable {
         /* Calculate scores and rank the videos based on descriptor selection
         /**********************************************************************/
         System.out.println("Query Status: Finding closest matches among database videos...");
-        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, DATABASE_DIR, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
+//        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, DATABASE_DIR, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
         
         /**********************************************************************/
-        /* TODO: Display the results in the list view and the histogram
+        /* TODO: Display the results in the list view and the line graph
         /**********************************************************************/
-        
-//        // TESTING: Serialization and Deserialization of VideoAnalysisResults object
-//        writeDatabaseMetadataFile(queryResults, queryDirectory);
-//        
-//        VideoAnalysisResults newResults = readDatabaseMetadataFile(queryDirectory);
-//        if (newResults != null)
-//        {
-//            System.out.println("Successfully read the metadata. " + newResults.filename);
-//        }
-//        else
-//        {
-//            System.out.println("The metadata file had null information.");
-//        }
-//        // END TESTING
+        double[] testFrameScores = {0, 10, 30, 20, 60, 70, 70, 50, 40, 30, 50}; // this is for testing
+        updateLineChart(testFrameScores);
         
         System.out.println("Finished processing query.");
     }
@@ -491,83 +475,18 @@ public class FXMLController implements Initializable {
         lstviewResultsList.getItems().addAll(directoryNames);
     }
     
-    // Used to initialize metadata file for a video in the database.
-    private void writeDatabaseMetadataFile(VideoAnalysisResults results, String videoDirectory)
+    // Adds the new frame score data to the line chart in the GUI.
+    private void updateLineChart(double[] frameScores)
     {
-        // Ensure that the directory to write to exists
-        File videoFileDirectory = new File (videoDirectory);
-        if (!videoFileDirectory.exists())
-        {
-            System.out.println("Video directory not found. Please enter a valid video location.");
-            return;
-        }
+        final XYChart.Series newSeries = new XYChart.Series();
         
-        String videoFilepath = videoFileDirectory.getAbsolutePath() + "/" + results.filename + ".meta";
-        System.out.println(videoFilepath);
-        
-        // Serialize and write out the object
-        try
-        {   
-            //Saving of object in a file
-            FileOutputStream file = new FileOutputStream(videoFilepath);
-            ObjectOutputStream out = new ObjectOutputStream(file);
-             
-            // Method for serialization of object
-            out.writeObject(results);
-             
-            out.close();
-            file.close();
-             
-            System.out.println("Object has been serialized.");
- 
-        }
-        catch(IOException ex)
+        for (int i = 0; i < frameScores.length; i++)
         {
-            ex.printStackTrace();
-            System.out.println("IOException is caught. Unable to write out results object.");
+            newSeries.getData().add(new XYChart.Data(i, frameScores[i]));
         }
+
+        // Get rid of any old data before adding the new data
+         chtVisualMatch.getData().clear(); 
+         chtVisualMatch.getData().add(newSeries);
     }
-    
-//    // Reads in the metadata in the provided file directory.
-//    private VideoAnalysisResults readDatabaseMetadataFile(String videoDirectory)
-//    {
-//        // Ensure that the directory to read from exists
-//        File videoFileDirectory = new File (videoDirectory);
-//        if (!videoFileDirectory.exists())
-//        {
-//            System.out.println("Video directory not found. Please enter a valid video location.");
-//            return null;
-//        }
-//        
-//        String metadataFilepath = videoFileDirectory.getAbsolutePath() + "/" + videoFileDirectory.getName() + ".meta";
-//        System.out.println(metadataFilepath);
-//        
-//        VideoAnalysisResults metadata = null;
-//        
-//        // Deserialization
-//        try
-//        {   
-//            // Reading the object from a file
-//            FileInputStream file = new FileInputStream(metadataFilepath);
-//            ObjectInputStream in = new ObjectInputStream(file);
-//             
-//            // Method for deserialization of object
-//            metadata = (VideoAnalysisResults) in.readObject();
-//             
-//            in.close();
-//            file.close();
-//        }
-//         
-//        catch(IOException ex)
-//        {
-//            System.out.println("IOException is caught. Unable to read metadata.");
-//        }
-//         
-//        catch(ClassNotFoundException ex)
-//        {
-//            System.out.println("ClassNotFoundException is caught. Unable to read metadata.");
-//        }
-//        
-//        return metadata;
-//    }
 }
