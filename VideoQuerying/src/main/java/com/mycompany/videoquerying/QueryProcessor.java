@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 /**
  * A wrapper class for handling all video query processing.
@@ -49,25 +50,53 @@ public class QueryProcessor {
         // foreach video that has a meta file in the database
         for (int i = 0; i < databaseVideoMeta.size(); i++)
         {
+            double[] frameScore = new double[600];
+            double cumulativeScore = 0;
+            double timePerFrame = 1.0 / 30.0;
+            
+            /**********************************************************************/        
+            /*                  OBJECT RECOGNITION DESCRIPTOR
+            /**********************************************************************/
             if (useObjectDescriptor && queryResults.objectResults != null)
             {
-                /**********************************************************************/        
-                /*   Use video label categories to pre-filter out videos that won't 
-                /*   have any similar object content.
-                /**********************************************************************/
-                // TODO
-
-
-                /**********************************************************************/        
-                /*   Use video labels to get the score for the query video's similarity 
-                /*   with each video in the database
-                /**********************************************************************/
-                // TODO
+                // Get the GCloud object results for the current database video
+                GCloudResults databaseObjectResults = databaseVideoMeta.get(i).objectResults;
+                
+                // for each frame in the database video
+                for (int frame = 0; frame < 600; frame++)
+                {
+                    // for each video label in the query video
+                    for (Entry<String, VideoLabelData> queryEntry : queryResults.objectResults.videoLabels.entrySet())
+                    {
+                        // Calculate the start and end time of the current frame
+                        double frameStartTime = frame * timePerFrame;
+                        double frameEndTime = frameStartTime + timePerFrame;
+                        
+                        // check if query video label is present in the current frame
+                        if (databaseObjectResults.videoLabels.containsKey(queryEntry.getKey()) &&
+                                (queryEntry.getValue().segmentData.startTime < databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.endTime  ||
+                                 queryEntry.getValue().segmentData.endTime > databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.startTime))
+                        {
+                            frameScore[frame] = queryEntry.getValue().segmentData.confidence * 
+                                                databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.confidence;
+                        }
+                    }
+                    
+                    cumulativeScore += frameScore[frame];
+                }
             }
+            
+            /**********************************************************************/        
+            /*                      DOMINANT COLOR DESCRIPTOR
+            /**********************************************************************/
             if (useColorDescriptor && queryResults.colorResults != null)
             {
 
             }
+            
+            /**********************************************************************/        
+            /*                          MOTION DESCRIPTOR
+            /**********************************************************************/
             if (useMotionDescriptor && queryResults.motionResults != null)
             {
 

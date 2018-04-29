@@ -104,8 +104,7 @@ public class OpenCVIntel {
 
     public static void MotionCV() {
         //load library
-        System.load("/usr/local/Cellar/opencv/3.4.1_2/share/OpenCV/java/libopencv_java341.dylib");
-//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        nu.pattern.OpenCV.loadShared();
 
         Mat frame = new Mat();
         Mat firstFrame = new Mat();

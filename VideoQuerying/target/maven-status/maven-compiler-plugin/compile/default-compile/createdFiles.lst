@@ -21,6 +21,7 @@ com/mycompany/videoquerying/FXMLController.class
 com/mycompany/videoquerying/FXMLController$9.class
 com/mycompany/videoquerying/GCloudResults.class
 com/mycompany/videoquerying/OpenCVMotionResults.class
+com/mycompany/videoquerying/OpenCVIntel.class
 com/mycompany/videoquerying/QueryProcessor.class
 com/mycompany/videoquerying/MainApp.class
 com/mycompany/videoquerying/FXMLController$10.class

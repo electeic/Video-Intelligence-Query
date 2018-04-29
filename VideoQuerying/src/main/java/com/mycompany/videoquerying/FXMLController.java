@@ -122,7 +122,6 @@ public class FXMLController implements Initializable {
             return;
         }
 
-
         /**********************************************************************/
         /* Set the descriptor processing flags based on radio button selection
         /**********************************************************************/
@@ -226,8 +225,6 @@ public class FXMLController implements Initializable {
                 updateSliderValue(mvQueryVideo.getMediaPlayer(), querySlider, queryVideoDuration);
             }
         });
-        
-
         
         // When stopping the player, set it's time back to 0 and add a listener to update the slider values again.
         mvQueryVideo.getMediaPlayer().setOnStopped(new Runnable() 
