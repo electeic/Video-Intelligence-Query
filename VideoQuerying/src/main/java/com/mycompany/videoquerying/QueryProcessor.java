@@ -1,6 +1,7 @@
 package com.mycompany.videoquerying;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
+import static com.mycompany.videoquerying.OpenCVIntel.ClusterVideoCV;
 import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 import static com.mycompany.videoquerying.VideoEncoder.encodeMp4;
 
@@ -132,15 +133,17 @@ public class QueryProcessor {
     // Performs analysis of the frames at the given filepath using OpenCV
     public static OpenCVColorResults processOpenCVColor(String filepath)
     {
-        System.out.println("Need to implement processOpenCVColor()");
+        ClusterVideoCV();
+//        ClusterCV();
         return null;
     }
-    
+
+
+
     // Performs analysis of the frames at the given filepath using OpenCV
     public static OpenCVMotionResults processOpenCVMotion(String filepath)
     {
         MotionCV();
-        System.out.println("Need to implement processOpenCVMotion()");
         return null;
     }
     

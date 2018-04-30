@@ -19,6 +19,11 @@ import org.opencv.videoio.VideoCapture;
  */
 public class OpenCVIntel {
 
+    public static void CVInit()
+    {
+        nu.pattern.OpenCV.loadShared();
+    }
+
     public static void CVtest(){
         System.out.println("hello world.");
         nu.pattern.OpenCV.loadShared();
@@ -50,19 +55,77 @@ public class OpenCVIntel {
         System.out.println("OpenCV Mat data:\n" + m.dump());
     }
 
-    public static void stuff (String[] args) {
-//        CVLoader.load();
-//        Mat img = Mat.zeros(200, 200, CvType.CV_8UC3);
-//        Core.rectangle(img, new Point(0, 0), new Point(100, 200), new Scalar(0, 255, 0), -1);
-//        Core.rectangle(img, new Point(100, 0), new Point(200, 200), new Scalar(0, 0, 255), -1);
-//
-//        Mat clusters = cluster(img, 2).get(0);
-//
-//        ImgWindow.newWindow(img).setTitle("img");;
-//        ImgWindow.newWindow(clusters).setTitle("clusters");
+    public static void ClusterVideoCV()
+    {
+        Mat totalColors = new Mat();
+        Mat returnedColors = new Mat();
+        Mat frame = new Mat();
+        //"query_videos/first/first.mp4"
+        //"./query_videos/second/second.mp4"
+        //"./query_videos/Q5/Q5.mp4"
+        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
+
+        //set the video size to 1056x864
+        camera.set(3, 1056);
+        camera.set(4, 864);
+
+        int j = 0;
+        while(camera.read(frame) && j < 10)
+        {
+            System.out.println(j++);
+            totalColors.push_back(cluster(frame, 5));
+        }
+
+        System.out.println("Finished total colors pushback");
+        Mat combinedTotalColors = new Mat();
+
+
+        ArrayList<Mat> singleColorMat = new ArrayList();
+        singleColorMat.add(totalColors.col(0));
+        singleColorMat.add(totalColors.col(1));
+        singleColorMat.add(totalColors.col(2));
+        Core.merge(singleColorMat, combinedTotalColors);
+
+
+        System.out.println(combinedTotalColors.dump());
+        returnedColors = cluster(combinedTotalColors, 5);
+        System.out.println(returnedColors.dump());
+//        return returnedColors;
     }
 
-    public static List<Mat> cluster(Mat cutout, int k) {
+//    public static void ClusterCV () {
+//        Mat img = Imgcodecs.imread("/Users/ivanchen/Desktop/dinosaur.png");
+//        Mat clusters = cluster(img, 5);
+//    }
+    private static Map<Integer, Integer> countClusters (Mat cutout, Mat labels, Mat centers) {
+        centers.convertTo(centers, CvType.CV_8UC1, 255.0);
+        centers.reshape(3);
+
+        List<Mat> clusters = new ArrayList<Mat>();
+        for (int i = 0; i < centers.rows(); i++) {
+            clusters.add(Mat.zeros(cutout.size(), cutout.type()));
+        }
+
+        Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+        for (int i = 0; i < centers.rows(); i++) counts.put(i, 0);
+
+        int rows = 0;
+        for (int y = 0; y < cutout.rows(); y++) {
+            for (int x = 0; x < cutout.cols(); x++) {
+                int label = (int) labels.get(rows, 0)[0];
+                System.out.println("label: " + label);
+                counts.put(label, counts.get(label) + 1);
+                rows++;
+            }
+        }
+        System.out.println(counts);
+        OpenCVColorResults OCVColorResult = new OpenCVColorResults();
+
+        return counts;
+    }
+
+    public static Mat cluster(Mat cutout, int k) {
+
         Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
         Mat samples32f = new Mat();
         samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
@@ -71,35 +134,13 @@ public class OpenCVIntel {
         TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
         Mat centers = new Mat();
         Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
-        return showClusters(cutout, labels, centers);
-    }
 
-    private static List<Mat> showClusters (Mat cutout, Mat labels, Mat centers) {
+        Map<Integer, Integer> centerCounts = countClusters(cutout, labels, centers);
+
         centers.convertTo(centers, CvType.CV_8UC1, 255.0);
         centers.reshape(3);
-
-        List<Mat> clusters = new ArrayList<Mat>();
-        for(int i = 0; i < centers.rows(); i++) {
-            clusters.add(Mat.zeros(cutout.size(), cutout.type()));
-        }
-
-        Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
-        for(int i = 0; i < centers.rows(); i++) counts.put(i, 0);
-
-        int rows = 0;
-        for(int y = 0; y < cutout.rows(); y++) {
-            for(int x = 0; x < cutout.cols(); x++) {
-                int label = (int)labels.get(rows, 0)[0];
-                int r = (int)centers.get(label, 2)[0];
-                int g = (int)centers.get(label, 1)[0];
-                int b = (int)centers.get(label, 0)[0];
-                counts.put(label, counts.get(label) + 1);
-                clusters.get(label).put(y, x, b, g, r);
-                rows++;
-            }
-        }
-        System.out.println(counts);
-        return clusters;
+//        System.out.println(centers.dump());
+        return centers;
     }
 
     public static void MotionCV() {
@@ -113,10 +154,12 @@ public class OpenCVIntel {
         Mat thresh = new Mat();
         List<MatOfPoint> cnts = new ArrayList<MatOfPoint>();
 
+        /*
+        Sample directory is "./database_videos/sports/sports.mp4"
+         */
         VideoCapture camera = new VideoCapture("./database_videos/sports/sports.mp4");
-//        camera.open(0); //open camera
 
-        //set the video size to 512x288
+        //set the video size to 1056x864
         camera.set(3, 1056);
         camera.set(4, 864);
 
@@ -125,11 +168,14 @@ public class OpenCVIntel {
         Imgproc.cvtColor(frame, firstFrame, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(firstFrame, firstFrame, new Size(21, 21), 0);
 
+        /*
+         * This is to write the frames out to a folder
+         */
         int j = 0;
-        float totalscore = 0;
+
+        float totalScore = 0;
         while(camera.read(frame)) {
             //convert to grayscale
-            System.out.println(j++);
 
             Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
             Imgproc.GaussianBlur(gray, gray, new Size(21, 21), 0);
@@ -141,11 +187,14 @@ public class OpenCVIntel {
             /*
              * This is to write the frames out to a folder
              */
-//            Imgcodecs.imwrite("/Users/ivanchen/Desktop/delta/delta" + j + ".jpg", frameDelta);
+//            Imgcodecs.imwrite("/Users/ivanchen/Desktop/delta/delta" + j++ + ".jpg", frameDelta);
 
             Imgproc.dilate(thresh, thresh, new Mat(), new Point(-1, -1), 2);
             Imgproc.findContours(thresh, cnts, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
+            /*
+             * This resets the frame each time
+             */
             Imgproc.cvtColor(frame, firstFrame, Imgproc.COLOR_BGR2GRAY);
             Imgproc.GaussianBlur(firstFrame, firstFrame, new Size(21, 21), 0);
 
@@ -156,9 +205,10 @@ public class OpenCVIntel {
          */
 
         for(int i=0; i < cnts.size(); i++) {
-            totalscore += Imgproc.contourArea(cnts.get(i));
+            totalScore += Imgproc.contourArea(cnts.get(i));
         }
 
-        System.out.println(totalscore);
+        System.out.println(totalScore);
+//        return totalScore;
     }
 }

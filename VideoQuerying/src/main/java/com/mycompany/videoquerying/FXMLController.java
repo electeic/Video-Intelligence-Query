@@ -1,6 +1,6 @@
 package com.mycompany.videoquerying;
 
-import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
+import static com.mycompany.videoquerying.OpenCVIntel.*;
 import static com.mycompany.videoquerying.QueryProcessor.findDatabaseMatch;
 import static com.mycompany.videoquerying.QueryProcessor.processGoogleCloudObjects;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVColor;
@@ -9,8 +9,6 @@ import static com.mycompany.videoquerying.QueryProcessor.processOpenCVMotion;
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabelsFromCloud;
 import static com.mycompany.videoquerying.GcloudVideoIntel.uploadFiles;
-import static com.mycompany.videoquerying.OpenCVIntel.CVtest;
-import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,6 +101,8 @@ public class FXMLController implements Initializable {
         
         // Initialize the MediaPlayer HashMap
         loadedVideos = new HashMap<>();
+
+        CVInit();
     } 
     
     @FXML
