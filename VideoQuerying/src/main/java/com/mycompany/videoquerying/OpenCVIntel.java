@@ -38,7 +38,7 @@ public class OpenCVIntel {
 
         OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat frame = new Mat();
-        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
+        VideoCapture camera = new VideoCapture(directory);
 
         //set the video size to 1056x864
         camera.set(3, 1056);
@@ -47,11 +47,16 @@ public class OpenCVIntel {
         /*
          * for each frame, populate the framedata with ColorData; It then adds the framesdata into the OpenCVColorResult
          */
+        int j = 0;
         while(camera.read(frame))
         {
-            FrameData framedata = new FrameData();
-            cluster(frame, k, framedata, true);
-            ocvcr.frames.add(framedata);
+            if(j % 10 == 0)
+            {
+                FrameData framedata = new FrameData();
+                cluster(frame, k, framedata, true);
+                ocvcr.frames.add(framedata);
+            }
+            System.out.println(j++);
         }
         return ocvcr;
     }
@@ -67,7 +72,7 @@ public class OpenCVIntel {
         //"query_videos/first/first.mp4"
         //"./query_videos/second/second.mp4"
         //"./query_videos/Q5/Q5.mp4"
-        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
+        VideoCapture camera = new VideoCapture(directory);
 
         //set the video size to 1056x864
         camera.set(3, 1056);

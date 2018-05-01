@@ -1,6 +1,7 @@
 package com.mycompany.videoquerying;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
+import static com.mycompany.videoquerying.OpenCVIntel.ClusterQueryVideos;
 import static com.mycompany.videoquerying.OpenCVIntel.ClusterVideoCV;
 import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 import static com.mycompany.videoquerying.VideoEncoder.encodeMp4;
@@ -185,18 +186,18 @@ public class QueryProcessor {
     public static OpenCVColorResults processOpenCVColor(String filepath)
     {
         OpenCVColorResults opcv =  ClusterVideoCV(filepath);
-//        for(int i = 0; i < opcv.frames.size(); i++)
-//        {
-//            for(int j = 0; j < opcv.frames.get(i).frameColors.size(); j++)
-//            {
-//                System.out.println("For each frame:");
-//                System.out.println(opcv.frames.get(i).frameColors.get(j).r);
-//                System.out.println(opcv.frames.get(i).frameColors.get(j).g);
-//                System.out.println(opcv.frames.get(i).frameColors.get(j).b);
-//                System.out.println(opcv.frames.get(i).frameColors.get(j).percentage);
-//                System.out.println("And again:");
-//            }
-//        }
+        for(int i = 0; i < opcv.frames.size(); i++)
+        {
+            for(int j = 0; j < opcv.frames.get(i).frameColors.size(); j++)
+            {
+                System.out.println("For each frame:");
+                System.out.println(opcv.frames.get(i).frameColors.get(j).r);
+                System.out.println(opcv.frames.get(i).frameColors.get(j).g);
+                System.out.println(opcv.frames.get(i).frameColors.get(j).b);
+                System.out.println(opcv.frames.get(i).frameColors.get(j).percentage);
+                System.out.println("And again:");
+            }
+        }
 //        ClusterCV();
         return opcv;
     }
@@ -314,7 +315,7 @@ public class QueryProcessor {
             // Process objects
             dbVideoResults.objectResults = processGoogleCloudObjects(databaseVideoFilepath);
             // Process color
-//            dbVideoResults.colorResults = processOpenCVColor(databaseVideoFilepath);
+            dbVideoResults.colorResults = ClusterQueryVideos(databaseVideoFilepath);
             // Process motion
             dbVideoResults.motionResults = processOpenCVMotion(databaseVideoFilepath);
             

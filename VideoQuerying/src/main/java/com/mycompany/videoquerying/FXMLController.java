@@ -161,7 +161,7 @@ public class FXMLController implements Initializable {
         // Google Cloud object detection
 //        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
         // Opencv color
-//        queryResults.colorResults = processOpenCVColor(queryVideoFilepath);
+        queryResults.colorResults = processOpenCVColor(queryVideoFilepath);
         // Opencv motion
         queryResults.motionResults = processOpenCVMotion(queryVideoFilepath);
         
