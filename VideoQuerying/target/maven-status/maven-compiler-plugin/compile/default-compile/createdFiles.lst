@@ -12,10 +12,12 @@ com/mycompany/videoquerying/FXMLController$3.class
 com/mycompany/videoquerying/FXMLController$3$1.class
 com/mycompany/videoquerying/OpenCVColorResults.class
 com/mycompany/videoquerying/MatchResult.class
+com/mycompany/videoquerying/ColorData.class
 com/mycompany/videoquerying/FXMLController$7.class
 com/mycompany/videoquerying/ShotLabelData.class
 com/mycompany/videoquerying/FXMLController$12.class
 com/mycompany/videoquerying/VideoLabelData.class
+com/mycompany/videoquerying/FrameData.class
 com/mycompany/videoquerying/FXMLController$5.class
 com/mycompany/videoquerying/FXMLController.class
 com/mycompany/videoquerying/FXMLController$9.class

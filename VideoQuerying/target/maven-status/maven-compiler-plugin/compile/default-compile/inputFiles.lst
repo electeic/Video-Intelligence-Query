@@ -8,6 +8,8 @@
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/MatchResult.java
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/FXMLController.java
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/GcloudVideoIntel.java
+/Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/FrameData.java
+/Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/ColorData.java
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/VideoEncoder.java
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/MainApp.java
 /Users/stermark/workspace/videoQuerying/Video-Intelligence-Query/VideoQuerying/src/main/java/com/mycompany/videoquerying/GCloudResults.java

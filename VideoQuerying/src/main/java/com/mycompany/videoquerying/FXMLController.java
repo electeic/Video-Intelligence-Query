@@ -5,6 +5,7 @@ import static com.mycompany.videoquerying.QueryProcessor.findDatabaseMatch;
 import static com.mycompany.videoquerying.QueryProcessor.processGoogleCloudObjects;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVColor;
 import static com.mycompany.videoquerying.QueryProcessor.processOpenCVMotion;
+import static com.mycompany.videoquerying.QueryProcessor.processAllDatabaseVideos;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabelsFromCloud;
@@ -19,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -60,6 +62,9 @@ public class FXMLController implements Initializable {
     private boolean useColorDescriptor = false;
     private boolean useMotionDescriptor = false;
     
+    private ArrayList<MatchResult> currentMatches = new ArrayList();
+    private String currentDatabaseVideoName = "";
+    
     /* FXML Variables */
     @FXML
     private MediaView mvDatabaseVideo;
@@ -95,6 +100,7 @@ public class FXMLController implements Initializable {
         descriptorGroup.selectToggle(descriptorGroup.getToggles().get(0));
         
         // TODO: Read in database videos from their binary objects so that they can be queried against
+//        processAllDatabaseVideos(DATABASE_DIR);
         
         // Initialize other variables
         encoder = new VideoEncoder();
@@ -102,11 +108,15 @@ public class FXMLController implements Initializable {
         // Initialize the MediaPlayer HashMap
         loadedVideos = new HashMap<>();
 
+        // Add listener to the database list view
+        initializeDatabaseListView();
+        
+        // Initialize OpenCV
         CVInit();
     } 
     
     @FXML
-    private void handleSearchAction(ActionEvent event) {
+    private void handleSearchAction(ActionEvent event) {        
         /**********************************************************************/        
         /*   Get the query video input and ensure that the files exist
         /**********************************************************************/
@@ -117,7 +127,8 @@ public class FXMLController implements Initializable {
             lblQueryStatus.setText("Directory not found. Please enter a valid query location.");
             return;
         }
-
+        lblQueryStatus.setText("Processing query...");
+        
         /**********************************************************************/
         /* Set the descriptor processing flags based on radio button selection
         /**********************************************************************/
@@ -150,7 +161,7 @@ public class FXMLController implements Initializable {
         // Google Cloud object detection
 //        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
         // Opencv color
-        queryResults.colorResults = processOpenCVColor(queryDirectory);
+//        queryResults.colorResults = processOpenCVColor(queryVideoFilepath);
         // Opencv motion
         queryResults.motionResults = processOpenCVMotion(queryVideoFilepath);
         
@@ -158,14 +169,20 @@ public class FXMLController implements Initializable {
         /* Calculate scores and rank the videos based on descriptor selection
         /**********************************************************************/
         System.out.println("Query Status: Finding closest matches among database videos...");
-//        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, DATABASE_DIR, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
+        ArrayList<MatchResult> matches = findDatabaseMatch(queryResults, DATABASE_DIR, useObjectDescriptor, useColorDescriptor, useMotionDescriptor);
+        currentMatches = matches;
+        updateListView(currentMatches);
         
         /**********************************************************************/
-        /* TODO: Display the results in the list view and the line graph
+        /*  Display select the top view in the list view and the line graph
         /**********************************************************************/
-//        double[] testFrameScores = {0, 10, 30, 20, 60, 70, 70, 50, 40, 30, 50}; // this is for testing
-        updateLineChart(queryResults.motionResults.frameMotion.stream().mapToDouble(d -> d).toArray());
+        if (!currentMatches.isEmpty())
+        {
+            // Select the first video as a default to show after the results are found
+            lstviewResultsList.getSelectionModel().select(0);
+        } 
         
+        lblQueryStatus.setText("Finished processing query.");
         System.out.println("Finished processing query.");
     }
     
@@ -445,34 +462,44 @@ public class FXMLController implements Initializable {
         {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) 
-            {
-                // NEW CODE
-                if (loadedVideos.containsKey(newValue))
+            {   
+                if (newValue != null)
                 {
-                    // Stop the previous video
-                    loadedVideos.get(oldValue).stop();
+                    // Extract the name of the new database video
+                    String[] ss = newValue.split("\\|");
+                    String newVideoString = ss[0].trim();
+                    System.out.println(newVideoString + ".");
 
-                    // Load in the new video that the user selected
-                    mvDatabaseVideo.setMediaPlayer(loadedVideos.get(newValue));
-                }
-                else
-                {
-                    // Load in the video and add it to the loaded videos hashmap
-                    MediaPlayer newPlayer = loadDatabaseVideo(DATABASE_DIR + newValue + "/" + newValue + ".mp4");
-                    loadedVideos.put(newValue, newPlayer);
+                    // Load the match result results into the visual indicator graph
+                    for (int i = 0; i < currentMatches.size(); i++)
+                    {
+                        if (Objects.equals(currentMatches.get(i).databaseFileName, newVideoString))
+                        {
+                            updateLineChart(currentMatches.get(i).frameScores);
+                        }
+                    }
+
+                    // Load database video into player in the GUI
+                    if (loadedVideos.containsKey(newVideoString))
+                    {
+                        // Stop the previous video
+                        loadedVideos.get(currentDatabaseVideoName).stop();
+
+                        // Load in the new video that the user selected
+                        mvDatabaseVideo.setMediaPlayer(loadedVideos.get(newVideoString));
+                    }
+                    else
+                    {
+                        // Load in the video and add it to the loaded videos hashmap
+                        MediaPlayer newPlayer = loadDatabaseVideo(DATABASE_DIR + newVideoString + "/" + newVideoString + ".mp4");
+                        loadedVideos.put(newVideoString, newPlayer);
+                    }
+
+                    // Mark the new video name as the current video name
+                    currentDatabaseVideoName = newVideoString;
                 }
             }
         });
-        
-        // Get the names of the videos in the database and add their names to the list view
-        File[] directories = new File(DATABASE_DIR).listFiles(File::isDirectory);
-        ArrayList<String> directoryNames = new ArrayList<String>();
-        for (int i = 0; i < directories.length; i++)
-        {
-            directoryNames.add(directories[i].getName());
-        }
-        
-        lstviewResultsList.getItems().addAll(directoryNames);
     }
     
     // Adds the new frame score data to the line chart in the GUI.
@@ -488,5 +515,21 @@ public class FXMLController implements Initializable {
         // Get rid of any old data before adding the new data
          chtVisualMatch.getData().clear(); 
          chtVisualMatch.getData().add(newSeries);
+    }
+    
+    // Updates the list view in the GUI with results of the given matches.
+    // Note: The given ArrayList is assumed to be sorted in descending order already.
+    private void updateListView(ArrayList<MatchResult> matches)
+    {
+        ArrayList<String> directoryNames = new ArrayList();
+        for (int i = 0; i < matches.size(); i++)
+        {
+            String displayString = matches.get(i).databaseFileName;
+            displayString += " | ";
+            displayString += String.format("%,.3f", matches.get(i).matchScore);
+            directoryNames.add(displayString);
+        }
+        lstviewResultsList.getItems().clear();
+        lstviewResultsList.getItems().addAll(directoryNames);
     }
 }
