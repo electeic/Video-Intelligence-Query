@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
@@ -27,7 +28,10 @@ public class QueryProcessor {
                                                             boolean useColorDescriptor, 
                                                             boolean useMotionDescriptor)
     {
-        System.out.println("Need to implement findDatabaseMatch()");
+        System.out.println("Searching database for similar videos...");
+        
+        // Initialize the match results arraylist
+        ArrayList<MatchResult> results = new ArrayList();
         
         /**********************************************************************/        
         /*   Load in the pre-processed database meta files for comparison
@@ -63,6 +67,8 @@ public class QueryProcessor {
             double[] objectFrameScore = new double[600];
             if (useObjectDescriptor && queryResults.objectResults != null)
             {
+                System.out.println("Processing object results...");
+                
                 // Get the GCloud object results for the current database video
                 GCloudResults databaseObjectResults = databaseVideoMeta.get(i).objectResults;
                 
@@ -101,9 +107,11 @@ public class QueryProcessor {
             /**********************************************************************/        
             /*                      DOMINANT COLOR DESCRIPTOR
             /**********************************************************************/
+            double overallColorScore = 0;
+            double[] colorFrameScore = new double[600];
             if (useColorDescriptor && queryResults.colorResults != null)
             {
-
+                System.out.println("Processing color results...");
             }
             
             /**********************************************************************/        
@@ -114,6 +122,8 @@ public class QueryProcessor {
             
             if (useMotionDescriptor && queryResults.motionResults != null)
             {
+                System.out.println("Processing motion results...");
+                
                 // Get the GCloud object results for the current database video
                 OpenCVMotionResults databaseMotionResults = databaseVideoMeta.get(i).motionResults;
                 
@@ -131,12 +141,27 @@ public class QueryProcessor {
                 double absDiff = Math.abs(queryResults.motionResults.averageMotion - databaseMotionResults.averageMotion);
                 overallMotionScore = (1 - (absDiff / frameArea)); // Optionally add a motionWeight parameter and mult here
             }
+            
+            /**********************************************************************/        
+            /*        CREATE MATCH RESULT FOR THIS QUERY/DATABASE VIDEO PAIR
+            /**********************************************************************/
+            // Combine all the scores
+            double finalScore = overallObjectScore + overallColorScore + overallMotionScore;
+            double[] finalFrameScores = new double[600];
+            for (int j = 0; j < finalFrameScores.length; j++)
+            {
+                finalFrameScores[j] = objectFrameScore[j] + colorFrameScore[j] + motionFrameScore[j];
+            }
+            
+            // Create a new MatchResult and add it to the results to return after all searching is finished.
+            MatchResult newResult = new MatchResult(queryResults.filename, databaseVideoMeta.get(i).filename, finalScore, finalFrameScores);
+            results.add(newResult);
         }
 
+        // Sort the list of files from highest to lowest score before returning
+        Collections.sort(results);
         
-        // TODO: Sort the list of files from highest to lowest score before returning
-        
-        return null;
+        return results;
     }
     
     // Performs analysis of the query video using Google Cloud object recognition
@@ -175,8 +200,6 @@ public class QueryProcessor {
 //        ClusterCV();
         return opcv;
     }
-
-
 
     // Performs analysis of the frames at the given filepath using OpenCV
     public static OpenCVMotionResults processOpenCVMotion(String filepath)
@@ -273,11 +296,14 @@ public class QueryProcessor {
         
         for (int i = 0; i < directories.length; i++)
         {
-            // Get video filepath
+            // Get video directory
             String videoDirectory = directories[i].getAbsolutePath();
             
             // Encode the video (to get .png's and .mp4)
-            encodeMp4(videoDirectory);
+//            encodeMp4(videoDirectory);
+            
+            // Get the newly created .mp4 video filepath
+            String databaseVideoFilepath = directories[i].getAbsolutePath() + "/" + directories[i].getName() + ".mp4";
             
             // Setup VideoAnalysisResults for the current video
             VideoAnalysisResults dbVideoResults = new VideoAnalysisResults();
@@ -286,11 +312,11 @@ public class QueryProcessor {
             dbVideoResults.filename = directories[i].getName();
             
             // Process objects
-            dbVideoResults.objectResults = processGoogleCloudObjects(videoDirectory);
+            dbVideoResults.objectResults = processGoogleCloudObjects(databaseVideoFilepath);
             // Process color
-            dbVideoResults.colorResults = processOpenCVColor(videoDirectory);
+//            dbVideoResults.colorResults = processOpenCVColor(databaseVideoFilepath);
             // Process motion
-            dbVideoResults.motionResults = processOpenCVMotion(videoDirectory);
+            dbVideoResults.motionResults = processOpenCVMotion(databaseVideoFilepath);
             
             // Write out VideoAnalysisResults
             writeDatabaseMetadataFile(dbVideoResults, directories[i].getAbsolutePath());
