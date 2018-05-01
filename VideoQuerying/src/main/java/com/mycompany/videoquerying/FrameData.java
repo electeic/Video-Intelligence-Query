@@ -7,4 +7,8 @@ import java.util.ArrayList;
  */
 public class FrameData {
     ArrayList<ColorData> frameColors;
+    public FrameData()
+    {
+        frameColors = new ArrayList<>();
+    }
 }

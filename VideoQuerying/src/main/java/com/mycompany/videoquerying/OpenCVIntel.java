@@ -40,7 +40,7 @@ public class OpenCVIntel {
         camera.set(4, 864);
 
         int j = 0;
-        while(camera.read(frame) && j < 10)
+        while(camera.read(frame) && j < 2)
         {
             FrameData framedata = new FrameData();
             System.out.println(j++);
@@ -50,7 +50,7 @@ public class OpenCVIntel {
         return ocvcr;
     }
 
-    public static OpenCVColorResults ClusterQueryVideos()
+    public static OpenCVColorResults ClusterQueryVideos(String directory)
     {
         OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat totalColors = new Mat();
@@ -137,11 +137,17 @@ public class OpenCVIntel {
             }
         }
 
+        rows = 0;
         for(int it = 0; it < counts.size(); it++)
         {
+
             int label = (int) labels.get(rows, 0)[0];
-            frameData.frameColors.add(new ColorData((int)centers.get(label, 2)[0], (int)centers.get(label, 1)[0],
-                    (int)centers.get(label, 0)[0], counts.get(it)/(cutout.rows() * cutout.cols())));
+            int r = (int)centers.get(label, 2)[0];
+            int g = (int)centers.get(label, 1)[0];
+            int b = (int)centers.get(label, 0)[0];
+            frameData.frameColors.add(
+                     new ColorData(r, g, b, counts.get(it)/(cutout.rows() * cutout.cols())));
+            rows++;
         }
     }
 
