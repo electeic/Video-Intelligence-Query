@@ -43,19 +43,7 @@ import java.util.List;
  */
 public class GcloudVideoIntel {
 
-//    public static void auth()
-//    {
-//        FileInputStream credentialsStream = new FileInputStream(fileName);
-//        GoogleCredentials credentials = null;
-//        try {
-//            credentials = GoogleCredentials.fromStream(credentialsStream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        FixedCredentialsProvider credentialsProvider = FixedCredentialsProvider.create(credentials);
-//    }
-
-    // Uploads the video at the given file path and returns the 
+    // Uploads the .mp4 video at the given file path and returns the object results.
     public static GCloudResults analyzeLabels(String filePath){
         
         // Instantiate a com.google.cloud.videointelligence.v1.VideoIntelligenceServiceClient

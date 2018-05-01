@@ -54,17 +54,20 @@ public class QueryProcessor {
         // foreach video that has a meta file in the database
         for (int i = 0; i < databaseVideoMeta.size(); i++)
         {
-            double[] frameScore = new double[600];
-            double cumulativeScore = 0;
             double timePerFrame = 1.0 / 30.0;
             
             /**********************************************************************/        
             /*                  OBJECT RECOGNITION DESCRIPTOR
             /**********************************************************************/
+            double overallObjectScore = 0;
+            double[] objectFrameScore = new double[600];
             if (useObjectDescriptor && queryResults.objectResults != null)
             {
                 // Get the GCloud object results for the current database video
                 GCloudResults databaseObjectResults = databaseVideoMeta.get(i).objectResults;
+                
+                // Keep track of how many labels are considered when matching
+                int numLabelsUsed = 0;
                 
                 // for each frame in the database video
                 for (int frame = 0; frame < 600; frame++)
@@ -81,13 +84,18 @@ public class QueryProcessor {
                                 (queryEntry.getValue().segmentData.startTime < databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.endTime  ||
                                  queryEntry.getValue().segmentData.endTime > databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.startTime))
                         {
-                            frameScore[frame] = queryEntry.getValue().segmentData.confidence * 
+                            objectFrameScore[frame] = queryEntry.getValue().segmentData.confidence * 
                                                 databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.confidence;
+                            
+                            numLabelsUsed += 1;
                         }
                     }
                     
-                    cumulativeScore += frameScore[frame];
+                    overallObjectScore += objectFrameScore[frame];
                 }
+                
+                // Calculate the overall object score as a percentage
+                overallObjectScore = (overallObjectScore / (double) numLabelsUsed); // Optionally add an objectWeight parameter and mult here
             }
             
             /**********************************************************************/        
@@ -101,9 +109,27 @@ public class QueryProcessor {
             /**********************************************************************/        
             /*                          MOTION DESCRIPTOR
             /**********************************************************************/
+            double overallMotionScore = 0;
+            double[] motionFrameScore = new double[600];
+            
             if (useMotionDescriptor && queryResults.motionResults != null)
             {
-
+                // Get the GCloud object results for the current database video
+                OpenCVMotionResults databaseMotionResults = databaseVideoMeta.get(i).motionResults;
+                
+                // Calculate the area of the frame
+                double frameArea = 1056 * 864;
+                        
+                // for each frame in the current database, find a score based on the average motion in the query video clip
+                for (int frame = 0; frame < databaseMotionResults.frameMotion.size(); frame++)
+                {
+                    double absDiff = Math.abs(queryResults.motionResults.averageMotion - databaseMotionResults.frameMotion.get(frame));
+                    motionFrameScore[frame] = (1 - (absDiff / frameArea)); // Optionally add a motionWeight parameter and mult here
+                }
+                
+                // Calculate the overall video motion match score
+                double absDiff = Math.abs(queryResults.motionResults.averageMotion - databaseMotionResults.averageMotion);
+                overallMotionScore = (1 - (absDiff / frameArea)); // Optionally add a motionWeight parameter and mult here
             }
         }
 
@@ -143,8 +169,7 @@ public class QueryProcessor {
     // Performs analysis of the frames at the given filepath using OpenCV
     public static OpenCVMotionResults processOpenCVMotion(String filepath)
     {
-        MotionCV();
-        return null;
+        return MotionCV(filepath);
     }
     
     // Reads in the metadata in the provided file directory.

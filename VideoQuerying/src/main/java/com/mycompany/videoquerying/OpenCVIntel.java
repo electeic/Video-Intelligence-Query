@@ -145,7 +145,8 @@ public class OpenCVIntel {
         }
     }
 
-    public static void MotionCV() {
+    // Processes the motion data of the given filepath to an .mp4
+    public static OpenCVMotionResults MotionCV(String videoFilepath) {
         //load library
         nu.pattern.OpenCV.loadShared();
 
@@ -154,31 +155,27 @@ public class OpenCVIntel {
         Mat gray = new Mat();
         Mat frameDelta = new Mat();
         Mat thresh = new Mat();
-        List<MatOfPoint> cnts = new ArrayList<MatOfPoint>();
 
         /*
         Sample directory is "./database_videos/sports/sports.mp4"
          */
-        VideoCapture camera = new VideoCapture("./database_videos/sports/sports.mp4");
+//        VideoCapture camera = new VideoCapture("./database_videos/sports/sports.mp4");
+        VideoCapture camera = new VideoCapture(videoFilepath);
 
         //set the video size to 1056x864
         camera.set(3, 1056);
         camera.set(4, 864);
 
         camera.read(frame);
+        
         //convert to grayscale and set the first frame
         Imgproc.cvtColor(frame, firstFrame, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(firstFrame, firstFrame, new Size(21, 21), 0);
 
-        /*
-         * This is to write the frames out to a folder
-         */
-        int j = 0;
-
-        float totalScore = 0;
+        OpenCVMotionResults finalResults = new OpenCVMotionResults();
+        
         while(camera.read(frame)) {
             //convert to grayscale
-
             Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
             Imgproc.GaussianBlur(gray, gray, new Size(21, 21), 0);
 
@@ -186,32 +183,41 @@ public class OpenCVIntel {
             Core.absdiff(firstFrame, gray, frameDelta);
             Imgproc.threshold(frameDelta, thresh, 25, 255, Imgproc.THRESH_BINARY);
 
-            /*
-             * This is to write the frames out to a folder
-             */
+             // Write the difference (delta) frames out to a folder
 //            Imgcodecs.imwrite("/Users/ivanchen/Desktop/delta/delta" + j++ + ".jpg", frameDelta);
 
             Imgproc.dilate(thresh, thresh, new Mat(), new Point(-1, -1), 2);
+            
+            List<MatOfPoint> cnts = new ArrayList<MatOfPoint>();
             Imgproc.findContours(thresh, cnts, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-            /*
-             * This resets the frame each time
-             */
+            // This resets the frame each time
             Imgproc.cvtColor(frame, firstFrame, Imgproc.COLOR_BGR2GRAY);
             Imgproc.GaussianBlur(firstFrame, firstFrame, new Size(21, 21), 0);
 
+            // Calculate the total current motion in the current frame
+            double currentFrameMotionAmount = 0;
+            for (int i = 0; i < cnts.size(); i++)
+            {
+                currentFrameMotionAmount += Imgproc.contourArea(cnts.get(i));
+            }
+            
+            // Add this amount to the finalResults
+            finalResults.frameMotion.add(currentFrameMotionAmount);
+            finalResults.totalMotion += currentFrameMotionAmount;
         }
+        
+        finalResults.averageMotion = finalResults.totalMotion / (double) finalResults.frameMotion.size();
 
-        /*
-         * This is to calculate the entropy within the video. It gives a score at the very end
-         */
+        // Uncomment the following to print out the motion results
+//        for (int i = 0; i < finalResults.frameMotion.size(); i++)
+//        {
+//            System.out.println("Frame " + i + ": " + finalResults.frameMotion.get(i));
+//        }
+//        System.out.println("Total motion: " + finalResults.totalMotion);
+//        System.out.println("Average motion: " + finalResults.averageMotion);
 
-        for(int i=0; i < cnts.size(); i++) {
-            totalScore += Imgproc.contourArea(cnts.get(i));
-        }
-
-        System.out.println(totalScore);
-//        return totalScore;
+        return finalResults;
     }
 
 }

@@ -150,9 +150,9 @@ public class FXMLController implements Initializable {
         // Google Cloud object detection
 //        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
         // Opencv color
-        queryResults.colorResults = processOpenCVColor(queryDirectory);
+//        queryResults.colorResults = processOpenCVColor(queryDirectory);
         // Opencv motion
-        queryResults.motionResults = processOpenCVMotion(queryDirectory);
+        queryResults.motionResults = processOpenCVMotion(queryVideoFilepath);
         
         /**********************************************************************/
         /* Calculate scores and rank the videos based on descriptor selection
@@ -163,8 +163,8 @@ public class FXMLController implements Initializable {
         /**********************************************************************/
         /* TODO: Display the results in the list view and the line graph
         /**********************************************************************/
-        double[] testFrameScores = {0, 10, 30, 20, 60, 70, 70, 50, 40, 30, 50}; // this is for testing
-        updateLineChart(testFrameScores);
+//        double[] testFrameScores = {0, 10, 30, 20, 60, 70, 70, 50, 40, 30, 50}; // this is for testing
+        updateLineChart(queryResults.motionResults.frameMotion.stream().mapToDouble(d -> d).toArray());
         
         System.out.println("Finished processing query.");
     }
