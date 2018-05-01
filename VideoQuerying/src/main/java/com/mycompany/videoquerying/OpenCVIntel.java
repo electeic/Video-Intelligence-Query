@@ -24,39 +24,35 @@ public class OpenCVIntel {
         nu.pattern.OpenCV.loadShared();
     }
 
-    public static void CVtest(){
-        System.out.println("hello world.");
-        nu.pattern.OpenCV.loadShared();
+    /*
+    This should be called when trying to find the primary colors of the images
+    Input: string directory
+    output: Mat
+     */
+    public static OpenCVColorResults ClusterVideoCV(String directory)
+    {
+        OpenCVColorResults ocvcr = new OpenCVColorResults();
+        Mat frame = new Mat();
+        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
 
-        // create and print on screen a 3x3 identity matrix
-        System.out.println("Create a 3x3 identity matrix...");
-        Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
-        System.out.println("mat = " + mat.dump());
+        //set the video size to 1056x864
+        camera.set(3, 1056);
+        camera.set(4, 864);
 
-        // prepare to convert a RGB image in gray scale
-//        String location = "resources/Poli.jpg";
-        String location = "/Users/ivanchen/Desktop/kirisu.jpg";
-        System.out.print("Convert the image at " + location + " in gray scale... ");
-        // get the jpeg image from the internal resource folder
-        Mat image = Imgcodecs.imread(location);
-        // convert the image in gray scale
-        Imgproc.cvtColor(image, image, Imgproc.COLOR_BGR2GRAY);
-        // write the new image on disk
-        Imgcodecs.imwrite("/Users/ivanchen/Desktop/kirisu-grey.jpg", image);
-        System.out.println("Done!");
-
-        System.out.println("Welcome to OpenCV " + Core.VERSION);
-        Mat m = new Mat(5, 10, CvType.CV_8UC1, new Scalar(0));
-        System.out.println("OpenCV Mat: " + m);
-        Mat mr1 = m.row(1);
-        mr1.setTo(new Scalar(1));
-        Mat mc5 = m.col(5);
-        mc5.setTo(new Scalar(5));
-        System.out.println("OpenCV Mat data:\n" + m.dump());
+        int j = 0;
+        while(camera.read(frame) && j < 10)
+        {
+            FrameData framedata = new FrameData();
+            System.out.println(j++);
+            PopulateFrameDataCluster(frame, 5, framedata);
+            ocvcr.frames.add(framedata);
+        }
+        return ocvcr;
     }
 
-    public static void ClusterVideoCV()
+    public static OpenCVColorResults ClusterQueryVideos()
     {
+        OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat totalColors = new Mat();
         Mat returnedColors = new Mat();
         Mat frame = new Mat();
@@ -86,43 +82,15 @@ public class OpenCVIntel {
         singleColorMat.add(totalColors.col(2));
         Core.merge(singleColorMat, combinedTotalColors);
 
-
+        FrameData frameData = new FrameData();
         System.out.println(combinedTotalColors.dump());
-        returnedColors = cluster(combinedTotalColors, 5);
-        System.out.println(returnedColors.dump());
+        PopulateFrameDataCluster(combinedTotalColors, 5, frameData);
+        return ocvcr;
+
+//        System.out.println(returnedColors.dump());
 //        return returnedColors;
     }
 
-//    public static void ClusterCV () {
-//        Mat img = Imgcodecs.imread("/Users/ivanchen/Desktop/dinosaur.png");
-//        Mat clusters = cluster(img, 5);
-//    }
-    private static Map<Integer, Integer> countClusters (Mat cutout, Mat labels, Mat centers) {
-        centers.convertTo(centers, CvType.CV_8UC1, 255.0);
-        centers.reshape(3);
-
-        List<Mat> clusters = new ArrayList<Mat>();
-        for (int i = 0; i < centers.rows(); i++) {
-            clusters.add(Mat.zeros(cutout.size(), cutout.type()));
-        }
-
-        Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
-        for (int i = 0; i < centers.rows(); i++) counts.put(i, 0);
-
-        int rows = 0;
-        for (int y = 0; y < cutout.rows(); y++) {
-            for (int x = 0; x < cutout.cols(); x++) {
-                int label = (int) labels.get(rows, 0)[0];
-                System.out.println("label: " + label);
-                counts.put(label, counts.get(label) + 1);
-                rows++;
-            }
-        }
-        System.out.println(counts);
-        OpenCVColorResults OCVColorResult = new OpenCVColorResults();
-
-        return counts;
-    }
 
     public static Mat cluster(Mat cutout, int k) {
 
@@ -135,12 +103,46 @@ public class OpenCVIntel {
         Mat centers = new Mat();
         Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
 
-        Map<Integer, Integer> centerCounts = countClusters(cutout, labels, centers);
-
         centers.convertTo(centers, CvType.CV_8UC1, 255.0);
         centers.reshape(3);
 //        System.out.println(centers.dump());
         return centers;
+    }
+
+    public static void PopulateFrameDataCluster(Mat cutout, int k, FrameData framedata) {
+
+        Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
+        Mat samples32f = new Mat();
+        samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
+
+        Mat labels = new Mat();
+        TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
+        Mat centers = new Mat();
+        Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
+
+        countClusters(cutout, labels, centers, framedata);
+    }
+
+    private static void countClusters (Mat cutout, Mat labels, Mat centers, FrameData frameData) {
+
+        Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+        for (int i = 0; i < centers.rows(); i++) counts.put(i, 0);
+
+        int rows = 0;
+        for (int y = 0; y < cutout.rows(); y++) {
+            for (int x = 0; x < cutout.cols(); x++) {
+                int label = (int) labels.get(rows, 0)[0];
+                counts.put(label, counts.get(label) + 1);
+                rows++;
+            }
+        }
+
+        for(int it = 0; it < counts.size(); it++)
+        {
+            int label = (int) labels.get(rows, 0)[0];
+            frameData.frameColors.add(new ColorData((int)centers.get(label, 2)[0], (int)centers.get(label, 1)[0],
+                    (int)centers.get(label, 0)[0], counts.get(it)/(cutout.rows() * cutout.cols())));
+        }
     }
 
     public static void MotionCV() {
@@ -211,4 +213,5 @@ public class OpenCVIntel {
         System.out.println(totalScore);
 //        return totalScore;
     }
+
 }

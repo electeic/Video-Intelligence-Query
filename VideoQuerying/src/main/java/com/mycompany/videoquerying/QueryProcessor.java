@@ -133,9 +133,9 @@ public class QueryProcessor {
     // Performs analysis of the frames at the given filepath using OpenCV
     public static OpenCVColorResults processOpenCVColor(String filepath)
     {
-        ClusterVideoCV();
+        return ClusterVideoCV(filepath);
 //        ClusterCV();
-        return null;
+//        return null;
     }
 
 
