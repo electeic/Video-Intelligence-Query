@@ -33,9 +33,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -83,11 +83,11 @@ public class FXMLController implements Initializable {
     @FXML
     private Slider databaseSlider;
     @FXML
-    private RadioButton rbtnColor;
+    private CheckBox chkColor;
     @FXML
-    private RadioButton rbtnMotion;
+    private CheckBox chkMotion;
     @FXML
-    private RadioButton rbtnObjects;
+    private CheckBox chkObjects;    
     @FXML
     private AreaChart chtVisualMatch;
     
@@ -95,9 +95,6 @@ public class FXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Set up some default form values
         txtQueryVideo.setText("./query_videos/first");
-        
-        // Set default video descriptor toggle button
-        descriptorGroup.selectToggle(descriptorGroup.getToggles().get(0));
         
         // TODO: Read in database videos from their binary objects so that they can be queried against
 //        processAllDatabaseVideos(DATABASE_DIR);
@@ -130,11 +127,11 @@ public class FXMLController implements Initializable {
         lblQueryStatus.setText("Processing query...");
         
         /**********************************************************************/
-        /* Set the descriptor processing flags based on radio button selection
+        /* Set the descriptor processing flags based on checkbox selections
         /**********************************************************************/
-        useColorDescriptor = rbtnColor.isSelected();
-        useMotionDescriptor = rbtnMotion.isSelected();
-        useObjectDescriptor = rbtnObjects.isSelected();
+        useColorDescriptor = chkColor.isSelected();
+        useMotionDescriptor = chkMotion.isSelected();
+        useObjectDescriptor = chkObjects.isSelected();
         
         /**********************************************************************/
         /*       Write query video frames to pngs and then encode to mp4
@@ -437,21 +434,21 @@ public class FXMLController implements Initializable {
     }
     
     @FXML
-    private void selectColorRadioButton(ActionEvent event)
+    private void selectColorCheckBox(ActionEvent event)
     {
-        rbtnColor.setSelected(true);
-    }
-    
-    @FXML 
-    private void selectMotionRadioButton(ActionEvent event)
-    {
-        rbtnMotion.setSelected(true);
+        chkColor.setSelected(true);
     }
     
     @FXML
-    private void selectObjectRadioButton(ActionEvent event)
+    private void selectMotionCheckBox(ActionEvent event)
     {
-        rbtnObjects.setSelected(true);
+        chkMotion.setSelected(true);
+    }
+    
+    @FXML
+    private void selectObjectCheckBox(ActionEvent event)
+    {
+        chkObjects.setSelected(true);
     }
     
     // Adds a set of items to a ListView GUI item.

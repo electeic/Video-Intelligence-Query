@@ -33,6 +33,12 @@ public class QueryProcessor {
         // Initialize the match results arraylist
         ArrayList<MatchResult> results = new ArrayList();
         
+        // Intialize descriptor weight parameters
+        int numDescriptorsUsed = 0;
+        if (useObjectDescriptor) numDescriptorsUsed++;
+        if (useColorDescriptor) numDescriptorsUsed++;
+        if (useMotionDescriptor) numDescriptorsUsed++;
+        
         /**********************************************************************/        
         /*   Load in the pre-processed database meta files for comparison
         /**********************************************************************/
@@ -66,7 +72,7 @@ public class QueryProcessor {
             double overallObjectScore = 0;
             double[] objectFrameScore = new double[600];
             if (useObjectDescriptor && queryResults.objectResults != null)
-            {
+            {   
                 System.out.println("Processing object results...");
                 
                 // Get the GCloud object results for the current database video
@@ -101,7 +107,10 @@ public class QueryProcessor {
                 }
                 
                 // Calculate the overall object score as a percentage
-                overallObjectScore = (overallObjectScore / (double) numLabelsUsed); // Optionally add an objectWeight parameter and mult here
+                if (numLabelsUsed > 0)
+                {
+                    overallObjectScore = (overallObjectScore / (double) numLabelsUsed);
+                }             
             }
             
             /**********************************************************************/        
@@ -134,23 +143,32 @@ public class QueryProcessor {
                 for (int frame = 0; frame < databaseMotionResults.frameMotion.size(); frame++)
                 {
                     double absDiff = Math.abs(queryResults.motionResults.averageMotion - databaseMotionResults.frameMotion.get(frame));
-                    motionFrameScore[frame] = (1 - (absDiff / frameArea)); // Optionally add a motionWeight parameter and mult here
+                    motionFrameScore[frame] = (1 - (absDiff / frameArea));
                 }
                 
                 // Calculate the overall video motion match score
                 double absDiff = Math.abs(queryResults.motionResults.averageMotion - databaseMotionResults.averageMotion);
-                overallMotionScore = (1 - (absDiff / frameArea)); // Optionally add a motionWeight parameter and mult here
+                overallMotionScore = (1 - (absDiff / frameArea));
             }
             
             /**********************************************************************/        
             /*        CREATE MATCH RESULT FOR THIS QUERY/DATABASE VIDEO PAIR
             /**********************************************************************/
-            // Combine all the scores
+            // Combine all the scores and weight them evenly based on how many descriptors were used
             double finalScore = overallObjectScore + overallColorScore + overallMotionScore;
+            if (numDescriptorsUsed > 0)
+            {
+                finalScore = finalScore / (double) numDescriptorsUsed;
+            }
+            
             double[] finalFrameScores = new double[600];
             for (int j = 0; j < finalFrameScores.length; j++)
             {
                 finalFrameScores[j] = objectFrameScore[j] + colorFrameScore[j] + motionFrameScore[j];
+                if (numDescriptorsUsed > 0)
+                {
+                    finalFrameScores[j] = finalFrameScores[j] / (double) numDescriptorsUsed;
+                }
             }
             
             // Create a new MatchResult and add it to the results to return after all searching is finished.
