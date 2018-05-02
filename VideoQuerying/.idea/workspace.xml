@@ -25,17 +25,17 @@
       <file leaf-file-name="FXMLController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/FXMLController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="161" column="53" selection-start-line="161" selection-start-column="53" selection-end-line="161" selection-end-column="53" />
+            <state relative-caret-position="255">
+              <caret line="161" column="24" selection-start-line="161" selection-start-column="24" selection-end-line="161" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#16993#16994#0" expanded="true" />
-                <element signature="e#17036#17037#0" expanded="true" />
-                <element signature="e#17118#17119#0" expanded="true" />
-                <element signature="e#17162#17163#0" expanded="true" />
-                <element signature="e#17243#17244#0" expanded="true" />
-                <element signature="e#17288#17289#0" expanded="true" />
-                <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+                <element signature="e#16841#16842#0" expanded="true" />
+                <element signature="e#16883#16884#0" expanded="true" />
+                <element signature="e#16961#16962#0" expanded="true" />
+                <element signature="e#17004#17005#0" expanded="true" />
+                <element signature="e#17082#17083#0" expanded="true" />
+                <element signature="e#17126#17127#0" expanded="true" />
+                <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
               </folding>
             </state>
           </provider>
@@ -44,11 +44,11 @@
       <file leaf-file-name="QueryProcessor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/QueryProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="317" column="50" selection-start-line="317" selection-start-column="50" selection-end-line="317" selection-end-column="50" />
+            <state relative-caret-position="379">
+              <caret line="380" column="60" selection-start-line="380" selection-start-column="60" selection-end-line="380" selection-end-column="60" />
               <folding>
-                <element signature="e#10421#10422#0" expanded="true" />
-                <element signature="e#10462#10463#0" expanded="true" />
+                <element signature="e#12553#12554#0" expanded="true" />
+                <element signature="e#12594#12595#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -57,11 +57,10 @@
       <file leaf-file-name="OpenCVIntel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/OpenCVIntel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-197">
-              <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+            <state relative-caret-position="268">
+              <caret line="54" column="40" selection-start-line="54" selection-start-column="40" selection-end-line="54" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1868#1900#0" expanded="false" />
                 <element signature="method#MotionCV#0;class#OpenCVIntel#0" expanded="false" />
               </folding>
             </state>
@@ -93,7 +92,10 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="135">
               <caret line="9" column="11" selection-start-line="9" selection-start-column="11" selection-end-line="9" selection-end-column="11" />
-              <folding />
+              <folding>
+                <element signature="e#200#201#0" expanded="false" />
+                <element signature="e#247#248#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -130,9 +132,9 @@
         <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/ColorData.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/FrameData.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/OpenCVColorResults.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/QueryProcessor.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/FXMLController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/OpenCVIntel.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/QueryProcessor.java" />
       </list>
     </option>
   </component>
@@ -735,12 +737,12 @@
       <workItem from="1525033791365" duration="18776000" />
       <workItem from="1525119808133" duration="12529000" />
       <workItem from="1525143014182" duration="1188000" />
-      <workItem from="1525211946942" duration="6382000" />
+      <workItem from="1525211946942" duration="10802000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="80073000" />
+    <option name="totallyTimeSpent" value="84493000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -754,13 +756,13 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24169987" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24169987" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.234375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934928" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32934928" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -814,6 +816,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="16" column="36" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="36" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -831,13 +834,13 @@
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -882,6 +885,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="16" column="36" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="36" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -899,13 +903,13 @@
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -950,6 +954,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -967,13 +972,13 @@
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -989,6 +994,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1006,13 +1012,13 @@
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -1028,6 +1034,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1045,13 +1052,13 @@
           <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -1067,6 +1074,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="23" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1084,13 +1092,13 @@
           <caret line="62" column="45" selection-start-line="62" selection-start-column="41" selection-end-line="62" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
@@ -1142,6 +1150,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="16" column="36" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="36" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1186,7 +1195,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="11" selection-start-line="9" selection-start-column="11" selection-end-line="9" selection-end-column="11" />
-          <folding />
+          <folding>
+            <element signature="e#200#201#0" expanded="false" />
+            <element signature="e#247#248#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1208,28 +1220,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/FXMLController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="161" column="53" selection-start-line="161" selection-start-column="53" selection-end-line="161" selection-end-column="53" />
+        <state relative-caret-position="255">
+          <caret line="161" column="24" selection-start-line="161" selection-start-column="24" selection-end-line="161" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#16993#16994#0" expanded="true" />
-            <element signature="e#17036#17037#0" expanded="true" />
-            <element signature="e#17118#17119#0" expanded="true" />
-            <element signature="e#17162#17163#0" expanded="true" />
-            <element signature="e#17243#17244#0" expanded="true" />
-            <element signature="e#17288#17289#0" expanded="true" />
-            <marker date="1525218001203" expanded="true" signature="20744:20749" ph="//..." />
+            <element signature="e#16841#16842#0" expanded="true" />
+            <element signature="e#16883#16884#0" expanded="true" />
+            <element signature="e#16961#16962#0" expanded="true" />
+            <element signature="e#17004#17005#0" expanded="true" />
+            <element signature="e#17082#17083#0" expanded="true" />
+            <element signature="e#17126#17127#0" expanded="true" />
+            <marker date="1525224454480" expanded="true" signature="20582:20587" ph="//..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/OpenCVIntel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-197">
-          <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+        <state relative-caret-position="268">
+          <caret line="54" column="40" selection-start-line="54" selection-start-column="40" selection-end-line="54" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1868#1900#0" expanded="false" />
             <element signature="method#MotionCV#0;class#OpenCVIntel#0" expanded="false" />
           </folding>
         </state>
@@ -1237,11 +1248,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/mycompany/videoquerying/QueryProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="317" column="50" selection-start-line="317" selection-start-column="50" selection-end-line="317" selection-end-column="50" />
+        <state relative-caret-position="379">
+          <caret line="380" column="60" selection-start-line="380" selection-start-column="60" selection-end-line="380" selection-end-column="60" />
           <folding>
-            <element signature="e#10421#10422#0" expanded="true" />
-            <element signature="e#10462#10463#0" expanded="true" />
+            <element signature="e#12553#12554#0" expanded="true" />
+            <element signature="e#12594#12595#0" expanded="true" />
           </folding>
         </state>
       </provider>

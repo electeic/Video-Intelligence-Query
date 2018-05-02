@@ -1,9 +1,7 @@
 package com.mycompany.videoquerying;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
-import static com.mycompany.videoquerying.OpenCVIntel.ClusterQueryVideos;
-import static com.mycompany.videoquerying.OpenCVIntel.ClusterVideoCV;
-import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
+import static com.mycompany.videoquerying.OpenCVIntel.*;
 import static com.mycompany.videoquerying.VideoEncoder.encodeMp4;
 
 import java.io.File;
@@ -122,6 +120,16 @@ public class QueryProcessor {
             if (useColorDescriptor && queryResults.colorResults != null)
             {
                 System.out.println("Processing color results...");
+
+                // Get the GCloud object results for the current database video
+                OpenCVColorResults databaseColorResults = databaseVideoMeta.get(i).colorResults;
+
+                for (int frame = 0; frame < databaseColorResults.frames.size(); frame++)
+                {
+                    colorFrameScore[frame] = 1 - scoreColor(queryResults.colorResults.frames.get(0), databaseColorResults.frames.get(frame));
+                    overallColorScore += colorFrameScore[frame];
+                }
+                overallColorScore /= (double) databaseColorResults.frames.size();
             }
             
             /**********************************************************************/        
@@ -182,7 +190,33 @@ public class QueryProcessor {
         
         return results;
     }
-    
+
+    private static double scoreColor(FrameData query, FrameData db)
+    {
+        double mag = magnitude (new ColorData(255, 255, 255, 0));
+        double score = 0;
+        for(int dIt = 0; dIt < db.frameColors.size(); dIt++)
+        {
+            for(int qIt = 0; qIt < query.frameColors.size(); qIt++)
+            {
+                score += ((distance(query.frameColors.get(qIt), db.frameColors.get(dIt)) / mag)
+                            * db.frameColors.get(dIt).percentage
+                            * query.frameColors.get(qIt).percentage);
+            }
+        }
+        return score;
+    }
+
+    private static double distance(ColorData c1, ColorData c2)
+    {
+        return Math.sqrt(Math.pow((c1.r - c2.r), 2) + Math.pow((c1.g - c2.g), 2) + Math.pow((c1.b - c2.b), 2));
+    }
+
+    private static double magnitude(ColorData c)
+    {
+        return Math.sqrt(Math.pow(c.r, 2) + Math.pow(c.g, 2) + Math.pow(c.b, 2));
+    }
+
     // Performs analysis of the query video using Google Cloud object recognition
     public static GCloudResults processGoogleCloudObjects(String filePath)
     {
@@ -201,22 +235,31 @@ public class QueryProcessor {
     }
     
     // Performs analysis of the frames at the given filepath using OpenCV
-    public static OpenCVColorResults processOpenCVColor(String filepath)
+    public static OpenCVColorResults processOpenCVColor(String filepath, boolean isQuery)
     {
-        OpenCVColorResults opcv =  ClusterVideoCV(filepath);
-        for(int i = 0; i < opcv.frames.size(); i++)
+        OpenCVColorResults opcv = new OpenCVColorResults();
+        if (isQuery)
         {
-            for(int j = 0; j < opcv.frames.get(i).frameColors.size(); j++)
-            {
-                System.out.println("For each frame:");
-                System.out.println(opcv.frames.get(i).frameColors.get(j).r);
-                System.out.println(opcv.frames.get(i).frameColors.get(j).g);
-                System.out.println(opcv.frames.get(i).frameColors.get(j).b);
-                System.out.println(opcv.frames.get(i).frameColors.get(j).percentage);
-                System.out.println("And again:");
-            }
+             opcv =  ClusterQueryVideos(filepath);
         }
-//        ClusterCV();
+        else
+        {
+            opcv = ClusterVideoCV(filepath);
+        }
+
+//        for(int i = 0; i < opcv.frames.size(); i++)
+//        {
+//            for(int j = 0; j < opcv.frames.get(i).frameColors.size(); j++)
+//            {
+//                System.out.println("For each frame:");
+//                System.out.println(opcv.frames.get(i).frameColors.get(j).r);
+//                System.out.println(opcv.frames.get(i).frameColors.get(j).g);
+//                System.out.println(opcv.frames.get(i).frameColors.get(j).b);
+//                System.out.println(opcv.frames.get(i).frameColors.get(j).percentage);
+//                System.out.println("And again:");
+//            }
+//        }
+
         return opcv;
     }
 
@@ -333,7 +376,7 @@ public class QueryProcessor {
             // Process objects
             dbVideoResults.objectResults = processGoogleCloudObjects(databaseVideoFilepath);
             // Process color
-            dbVideoResults.colorResults = ClusterQueryVideos(databaseVideoFilepath);
+            dbVideoResults.colorResults = processOpenCVColor(databaseVideoFilepath, false);
             // Process motion
             dbVideoResults.motionResults = processOpenCVMotion(databaseVideoFilepath);
             

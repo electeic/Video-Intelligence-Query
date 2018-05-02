@@ -47,16 +47,14 @@ public class OpenCVIntel {
         /*
          * for each frame, populate the framedata with ColorData; It then adds the framesdata into the OpenCVColorResult
          */
-        int j = 0;
+//        int j = 0;
         while(camera.read(frame))
         {
-            if(j % 10 == 0)
-            {
-                FrameData framedata = new FrameData();
-                cluster(frame, k, framedata, true);
-                ocvcr.frames.add(framedata);
-            }
-            System.out.println(j++);
+            FrameData framedata = new FrameData();
+            cluster(frame, k, framedata, true);
+            ocvcr.frames.add(framedata);
+
+//            System.out.println(j++);
         }
         return ocvcr;
     }
@@ -67,11 +65,9 @@ public class OpenCVIntel {
 
         OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat totalColors = new Mat();
-        Mat returnedColors = new Mat();
+//        Mat returnedColors = new Mat();
         Mat frame = new Mat();
-        //"query_videos/first/first.mp4"
-        //"./query_videos/second/second.mp4"
-        //"./query_videos/Q5/Q5.mp4"
+
         VideoCapture camera = new VideoCapture(directory);
 
         //set the video size to 1056x864
@@ -79,10 +75,13 @@ public class OpenCVIntel {
         camera.set(4, 864);
 
         int j = 0;
-        while(camera.read(frame) && j < k)
+        while(camera.read(frame))
         {
+            if(j % 10 == 0)
+            {
+                totalColors.push_back(cluster(frame, k, null, false));
+            }
             System.out.println(j++);
-            totalColors.push_back(cluster(frame, k, null, false));
         }
 
         System.out.println("Finished total colors pushback");
@@ -97,6 +96,7 @@ public class OpenCVIntel {
         FrameData frameData = new FrameData();
         System.out.println("CombinedTotalColors dump = " + combinedTotalColors.dump());
         cluster(combinedTotalColors, k, frameData, true);
+        ocvcr.frames.add(frameData);
         return ocvcr;
 
 //        System.out.println(returnedColors.dump());
