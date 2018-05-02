@@ -47,14 +47,15 @@ public class OpenCVIntel {
         /*
          * for each frame, populate the framedata with ColorData; It then adds the framesdata into the OpenCVColorResult
          */
-//        int j = 0;
+        int j = 0;
         while(camera.read(frame))
         {
             FrameData framedata = new FrameData();
             cluster(frame, k, framedata, true);
             ocvcr.frames.add(framedata);
 
-//            System.out.println(j++);
+            System.out.println("Color frame: " + j);
+            j++;
         }
         return ocvcr;
     }
@@ -121,8 +122,8 @@ public class OpenCVIntel {
 
         centers.convertTo(centers, CvType.CV_8UC1, 255.0);
         centers.reshape(3);
-        System.out.println("This is before Centers dump");
-        System.out.println(centers.dump());
+//        System.out.println("This is before Centers dump");
+//        System.out.println(centers.dump());
 
         if(populateFrameCluster)
         {

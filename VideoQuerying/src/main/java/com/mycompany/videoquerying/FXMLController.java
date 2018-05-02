@@ -95,10 +95,7 @@ public class FXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Set up some default form values
         txtQueryVideo.setText("./query_videos/first");
-        
-        // TODO: Read in database videos from their binary objects so that they can be queried against
-//        processAllDatabaseVideos(DATABASE_DIR);
-        
+
         // Initialize other variables
         encoder = new VideoEncoder();
         
@@ -110,6 +107,10 @@ public class FXMLController implements Initializable {
         
         // Initialize OpenCV
         CVInit();
+              
+        // OPTIONAL: Re-process all database video meta files
+//        processAllDatabaseVideos(DATABASE_DIR);
+        
     } 
     
     @FXML
@@ -156,7 +157,7 @@ public class FXMLController implements Initializable {
         queryResults.filename = queryFileDirectory.getName();
         
         // Google Cloud object detection
-//        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
+        queryResults.objectResults = processGoogleCloudObjects(queryVideoFilepath);            
         // Opencv color
         queryResults.colorResults = processOpenCVColor(queryVideoFilepath, true);
         // Opencv motion

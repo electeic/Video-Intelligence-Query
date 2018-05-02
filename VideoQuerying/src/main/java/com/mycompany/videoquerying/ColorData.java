@@ -1,11 +1,13 @@
 package com.mycompany.videoquerying;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by ivanchen on 4/30/18.
  */
-class ColorData {
+class ColorData implements Serializable
+{
     public int r;
     public int g;
     public int b;

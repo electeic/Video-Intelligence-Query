@@ -82,7 +82,7 @@ public class QueryProcessor {
                 
                 // for each frame in the database video
                 for (int frame = 0; frame < 600; frame++)
-                {
+                {   
                     // for each video label in the query video
                     for (Entry<String, VideoLabelData> queryEntry : queryResults.objectResults.videoLabels.entrySet())
                     {
@@ -90,15 +90,20 @@ public class QueryProcessor {
                         double frameStartTime = frame * timePerFrame;
                         double frameEndTime = frameStartTime + timePerFrame;
                         
-                        // check if query video label is present in the current frame
-                        if (databaseObjectResults.videoLabels.containsKey(queryEntry.getKey()) &&
-                                (queryEntry.getValue().segmentData.startTime < databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.endTime  ||
-                                 queryEntry.getValue().segmentData.endTime > databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.startTime))
+                        // check if query video label is present in the current frame (using shot labels)
+                        if (databaseObjectResults.shotLabels.containsKey(queryEntry.getKey()))                               
                         {
-                            objectFrameScore[frame] = queryEntry.getValue().segmentData.confidence * 
-                                                databaseObjectResults.videoLabels.get(queryEntry.getKey()).segmentData.confidence;
-                            
-                            numLabelsUsed += 1;
+                            for (int seg = 0; seg < databaseObjectResults.shotLabels.get(queryEntry.getKey()).segments.size(); seg++)
+                            {
+                                if (frameEndTime > databaseObjectResults.shotLabels.get(queryEntry.getKey()).segments.get(seg).startTime  
+                                     && frameStartTime < databaseObjectResults.shotLabels.get(queryEntry.getKey()).segments.get(seg).endTime)
+                                {
+                                    objectFrameScore[frame] += queryEntry.getValue().segmentData.confidence * 
+                                                databaseObjectResults.shotLabels.get(queryEntry.getKey()).segments.get(seg).confidence;
+                                    
+                                     numLabelsUsed += 1;
+                                }
+                            }
                         }
                     }
                     
@@ -276,12 +281,12 @@ public class QueryProcessor {
         File videoFileDirectory = new File (videoDirectory);
         if (!videoFileDirectory.exists())
         {
-//            System.out.println("Video directory not found. Please enter a valid video location.");
+            System.out.println("Video directory not found. Please enter a valid video location.");
             return null;
         }
         
         String metadataFilepath = videoFileDirectory.getAbsolutePath() + "/" + videoFileDirectory.getName() + ".meta";
-//        System.out.println(metadataFilepath);
+        System.out.println(metadataFilepath);
         
         VideoAnalysisResults metadata = null;
         
@@ -356,10 +361,13 @@ public class QueryProcessor {
         // for each video in the database
         File[] directories = new File(databaseDirectory).listFiles(File::isDirectory);
         
-        for (int i = 0; i < directories.length; i++)
+//        for (int i = 0; i < directories.length; i++)
+        for (int i = 0; i < 1; i++)
         {
             // Get video directory
             String videoDirectory = directories[i].getAbsolutePath();
+            
+            System.out.println("Processing " + videoDirectory);
             
             // Encode the video (to get .png's and .mp4)
 //            encodeMp4(videoDirectory);
@@ -369,6 +377,7 @@ public class QueryProcessor {
             
             // Setup VideoAnalysisResults for the current video
             VideoAnalysisResults dbVideoResults = new VideoAnalysisResults();
+//            VideoAnalysisResults dbVideoResults = readDatabaseMetadataFile(videoDirectory);
             
             // Get video name
             dbVideoResults.filename = directories[i].getName();
@@ -381,7 +390,7 @@ public class QueryProcessor {
             dbVideoResults.motionResults = processOpenCVMotion(databaseVideoFilepath);
             
             // Write out VideoAnalysisResults
-            writeDatabaseMetadataFile(dbVideoResults, directories[i].getAbsolutePath());
+            writeDatabaseMetadataFile(dbVideoResults, videoDirectory);
             
             // Report success or failure
             System.out.println("Finished writing " + dbVideoResults.filename + ".meta");
