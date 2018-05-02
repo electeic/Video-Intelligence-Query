@@ -85,7 +85,7 @@ public class OpenCVIntel {
             System.out.println(j++);
         }
 
-        System.out.println("Finished total colors pushback");
+//        System.out.println("Finished total colors pushback");
         Mat combinedTotalColors = new Mat();
 
         ArrayList<Mat> singleColorMat = new ArrayList();
@@ -95,7 +95,7 @@ public class OpenCVIntel {
         Core.merge(singleColorMat, combinedTotalColors);
 
         FrameData frameData = new FrameData();
-        System.out.println("CombinedTotalColors dump = " + combinedTotalColors.dump());
+//        System.out.println("CombinedTotalColors dump = " + combinedTotalColors.dump());
         cluster(combinedTotalColors, k, frameData, true);
         ocvcr.frames.add(frameData);
         return ocvcr;
@@ -152,7 +152,7 @@ public class OpenCVIntel {
             }
         }
 
-        System.out.println("Counts: " + counts);
+//        System.out.println("Counts: " + counts);
 
         for(int row = 0; row < centers.rows(); row++)
         {

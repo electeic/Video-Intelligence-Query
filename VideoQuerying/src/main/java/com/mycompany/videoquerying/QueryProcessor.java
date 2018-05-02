@@ -83,6 +83,8 @@ public class QueryProcessor {
                 // for each frame in the database video
                 for (int frame = 0; frame < 600; frame++)
                 {   
+                    int numFrameLabels = 0;
+                    
                     // for each video label in the query video
                     for (Entry<String, VideoLabelData> queryEntry : queryResults.objectResults.videoLabels.entrySet())
                     {
@@ -101,13 +103,17 @@ public class QueryProcessor {
                                     objectFrameScore[frame] += queryEntry.getValue().segmentData.confidence * 
                                                 databaseObjectResults.shotLabels.get(queryEntry.getKey()).segments.get(seg).confidence;
                                     
-                                     numLabelsUsed += 1;
+                                     numLabelsUsed++;
+                                     numFrameLabels++;
                                 }
                             }
                         }
                     }
                     
                     overallObjectScore += objectFrameScore[frame];
+                    
+                    if (numFrameLabels > 0)
+                        objectFrameScore[frame] /= numFrameLabels;
                 }
                 
                 // Calculate the overall object score as a percentage

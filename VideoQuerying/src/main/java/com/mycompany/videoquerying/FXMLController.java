@@ -138,7 +138,7 @@ public class FXMLController implements Initializable {
         /*       Write query video frames to pngs and then encode to mp4
         /**********************************************************************/
         System.out.println("Query Status: Processing query video...");
-//        encoder.encodeMp4(queryDirectory);
+        encoder.encodeMp4(queryDirectory);
         
         /**********************************************************************/        
         /*                  Load the query video into the GUI
@@ -163,6 +163,10 @@ public class FXMLController implements Initializable {
         // Opencv motion
         queryResults.motionResults = processOpenCVMotion(queryVideoFilepath);
         
+        // Print out the filename, color, and motion results (the object results are already printed during processing)
+        printAdditionalVideoAnalysisResultsData(queryResults);
+
+//        queryResults.print();
         /**********************************************************************/
         /* Calculate scores and rank the videos based on descriptor selection
         /**********************************************************************/
@@ -529,5 +533,25 @@ public class FXMLController implements Initializable {
         }
         lstviewResultsList.getItems().clear();
         lstviewResultsList.getItems().addAll(directoryNames);
+    }
+    
+    public void printAdditionalVideoAnalysisResultsData(VideoAnalysisResults results)
+    {
+        System.out.println("VideoAnalysisResults for " + results.filename);
+        System.out.println("***** Color Results *****");
+        for (int i = 0; i < results.colorResults.frames.size(); i++)
+        {
+            for (int j = 0; j < results.colorResults.frames.get(i).frameColors.size(); j++)
+            {
+                ColorData c = results.colorResults.frames.get(i).frameColors.get(j);
+                System.out.println("color: (" + c.r + ", " + c.g + ", " + c.b + ")" + " | percentage: " + c.percentage);
+            }
+        }
+        System.out.println("***************");
+       
+        System.out.println("***** Motion Results *****");
+        System.out.println("Average motion: " + results.motionResults.averageMotion);
+        System.out.println("Total motion: " + results.motionResults.totalMotion);
+        System.out.println("***************");
     }
 }
