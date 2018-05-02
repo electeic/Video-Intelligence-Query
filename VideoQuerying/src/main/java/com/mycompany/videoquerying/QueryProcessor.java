@@ -361,8 +361,7 @@ public class QueryProcessor {
         // for each video in the database
         File[] directories = new File(databaseDirectory).listFiles(File::isDirectory);
         
-//        for (int i = 0; i < directories.length; i++)
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < directories.length; i++)
         {
             // Get video directory
             String videoDirectory = directories[i].getAbsolutePath();
@@ -377,7 +376,6 @@ public class QueryProcessor {
             
             // Setup VideoAnalysisResults for the current video
             VideoAnalysisResults dbVideoResults = new VideoAnalysisResults();
-//            VideoAnalysisResults dbVideoResults = readDatabaseMetadataFile(videoDirectory);
             
             // Get video name
             dbVideoResults.filename = directories[i].getName();
