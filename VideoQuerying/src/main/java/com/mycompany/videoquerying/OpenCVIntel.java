@@ -31,27 +31,40 @@ public class OpenCVIntel {
      */
     public static OpenCVColorResults ClusterVideoCV(String directory)
     {
+        /*
+         *This is a defined to find how many kcluster colors we want to use
+         */
+        int k = 5;
+
         OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat frame = new Mat();
-        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
+        VideoCapture camera = new VideoCapture(directory);
 
         //set the video size to 1056x864
         camera.set(3, 1056);
         camera.set(4, 864);
 
+        /*
+         * for each frame, populate the framedata with ColorData; It then adds the framesdata into the OpenCVColorResult
+         */
         int j = 0;
-        while(camera.read(frame) && j < 2)
+        while(camera.read(frame))
         {
-            FrameData framedata = new FrameData();
+            if(j % 10 == 0)
+            {
+                FrameData framedata = new FrameData();
+                cluster(frame, k, framedata, true);
+                ocvcr.frames.add(framedata);
+            }
             System.out.println(j++);
-            PopulateFrameDataCluster(frame, 5, framedata);
-            ocvcr.frames.add(framedata);
         }
         return ocvcr;
     }
 
     public static OpenCVColorResults ClusterQueryVideos(String directory)
     {
+        int k = 5;
+
         OpenCVColorResults ocvcr = new OpenCVColorResults();
         Mat totalColors = new Mat();
         Mat returnedColors = new Mat();
@@ -59,22 +72,21 @@ public class OpenCVIntel {
         //"query_videos/first/first.mp4"
         //"./query_videos/second/second.mp4"
         //"./query_videos/Q5/Q5.mp4"
-        VideoCapture camera = new VideoCapture("./query_videos/Q5/Q5.mp4");
+        VideoCapture camera = new VideoCapture(directory);
 
         //set the video size to 1056x864
         camera.set(3, 1056);
         camera.set(4, 864);
 
         int j = 0;
-        while(camera.read(frame) && j < 10)
+        while(camera.read(frame) && j < k)
         {
             System.out.println(j++);
-            totalColors.push_back(cluster(frame, 5));
+            totalColors.push_back(cluster(frame, k, null, false));
         }
 
         System.out.println("Finished total colors pushback");
         Mat combinedTotalColors = new Mat();
-
 
         ArrayList<Mat> singleColorMat = new ArrayList();
         singleColorMat.add(totalColors.col(0));
@@ -83,16 +95,20 @@ public class OpenCVIntel {
         Core.merge(singleColorMat, combinedTotalColors);
 
         FrameData frameData = new FrameData();
-        System.out.println(combinedTotalColors.dump());
-        PopulateFrameDataCluster(combinedTotalColors, 5, frameData);
+        System.out.println("CombinedTotalColors dump = " + combinedTotalColors.dump());
+        cluster(combinedTotalColors, k, frameData, true);
         return ocvcr;
 
 //        System.out.println(returnedColors.dump());
 //        return returnedColors;
     }
 
-
-    public static Mat cluster(Mat cutout, int k) {
+    /*
+     * for each frame, populate the framedata with ColorData; It then adds the framesdata into the OpenCVColorResult
+     * Input: Mat cutout, int k, FrameData, boolean
+     * Input: Boolean populateFrameCluster determines if we want to find the percentage of colors used
+     */
+    public static Mat cluster(Mat cutout, int k, FrameData framedata, boolean populateFrameCluster) {
 
         Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
         Mat samples32f = new Mat();
@@ -105,30 +121,28 @@ public class OpenCVIntel {
 
         centers.convertTo(centers, CvType.CV_8UC1, 255.0);
         centers.reshape(3);
-//        System.out.println(centers.dump());
+        System.out.println("This is before Centers dump");
+        System.out.println(centers.dump());
+
+        if(populateFrameCluster)
+        {
+            countClusters(cutout, labels, centers, framedata);
+        }
+
         return centers;
     }
 
-    public static void PopulateFrameDataCluster(Mat cutout, int k, FrameData framedata) {
-
-        Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
-        Mat samples32f = new Mat();
-        samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
-
-        Mat labels = new Mat();
-        TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
-        Mat centers = new Mat();
-        Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
-
-        countClusters(cutout, labels, centers, framedata);
-    }
-
+    /*
+     * Input: Mat cutout, Mat labels, FrameData, Mat Centers, FrameData
+     * Results: framedata is updated with new color data based on k.
+     */
     private static void countClusters (Mat cutout, Mat labels, Mat centers, FrameData frameData) {
 
         Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
         for (int i = 0; i < centers.rows(); i++) counts.put(i, 0);
 
         int rows = 0;
+        int totalcutout = cutout.rows() * cutout.cols();
         for (int y = 0; y < cutout.rows(); y++) {
             for (int x = 0; x < cutout.cols(); x++) {
                 int label = (int) labels.get(rows, 0)[0];
@@ -137,18 +151,17 @@ public class OpenCVIntel {
             }
         }
 
-        rows = 0;
-        for(int it = 0; it < counts.size(); it++)
-        {
+        System.out.println("Counts: " + counts);
 
-            int label = (int) labels.get(rows, 0)[0];
-            int r = (int)centers.get(label, 2)[0];
-            int g = (int)centers.get(label, 1)[0];
-            int b = (int)centers.get(label, 0)[0];
+        for(int row = 0; row < centers.rows(); row++)
+        {
+//            System.out.println("R = " + (int)centers.get(row, 2)[0]);
+//            System.out.println("G = " + (int)centers.get(row, 1)[0]);
+//            System.out.println("B = " + (int)centers.get(row, 0)[0]);
             frameData.frameColors.add(
-                     new ColorData(r, g, b, counts.get(it)/(cutout.rows() * cutout.cols())));
-            rows++;
+                new ColorData((int)centers.get(row, 2)[0], (int)centers.get(row, 1)[0], (int)centers.get(row, 0)[0], (float)counts.get(row)/totalcutout));
         }
+
     }
 
     // Processes the motion data of the given filepath to an .mp4
@@ -225,5 +238,6 @@ public class OpenCVIntel {
 
         return finalResults;
     }
+
 
 }

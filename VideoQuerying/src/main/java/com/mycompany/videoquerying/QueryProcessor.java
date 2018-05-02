@@ -1,6 +1,7 @@
 package com.mycompany.videoquerying;
 
 import static com.mycompany.videoquerying.GcloudVideoIntel.analyzeLabels;
+import static com.mycompany.videoquerying.OpenCVIntel.ClusterQueryVideos;
 import static com.mycompany.videoquerying.OpenCVIntel.ClusterVideoCV;
 import static com.mycompany.videoquerying.OpenCVIntel.MotionCV;
 import static com.mycompany.videoquerying.VideoEncoder.encodeMp4;
@@ -212,10 +213,11 @@ public class QueryProcessor {
                 System.out.println(opcv.frames.get(i).frameColors.get(j).g);
                 System.out.println(opcv.frames.get(i).frameColors.get(j).b);
                 System.out.println(opcv.frames.get(i).frameColors.get(j).percentage);
+                System.out.println("And again:");
             }
         }
 //        ClusterCV();
-        return null;
+        return opcv;
     }
 
     // Performs analysis of the frames at the given filepath using OpenCV
@@ -331,7 +333,7 @@ public class QueryProcessor {
             // Process objects
             dbVideoResults.objectResults = processGoogleCloudObjects(databaseVideoFilepath);
             // Process color
-//            dbVideoResults.colorResults = processOpenCVColor(databaseVideoFilepath);
+            dbVideoResults.colorResults = ClusterQueryVideos(databaseVideoFilepath);
             // Process motion
             dbVideoResults.motionResults = processOpenCVMotion(databaseVideoFilepath);
             
