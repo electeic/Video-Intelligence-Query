@@ -166,7 +166,6 @@ public class FXMLController implements Initializable {
         // Print out the filename, color, and motion results (the object results are already printed during processing)
         printAdditionalVideoAnalysisResultsData(queryResults);
 
-//        queryResults.print();
         /**********************************************************************/
         /* Calculate scores and rank the videos based on descriptor selection
         /**********************************************************************/
